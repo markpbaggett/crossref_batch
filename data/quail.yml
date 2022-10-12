@@ -1,0 +1,88 @@
+contributors:
+  - given: Frank R.
+    surname: Thompson
+    suffix: III
+    role: Editor in Chief
+    sequence: first
+    institution:
+      institution_name: USDA Forest Service
+  - given: Roger D.
+    surname: Applegate
+    role: Associate Editor
+    sequence: additional
+    institution:
+      institution_name: Tennessee Wildlife Resources Agency
+  - given: Leonard A.
+    surname: Brennan
+    role: Associate Editor
+    sequence: additional
+    institution:
+      institution_name: Texas A&M University-Kingsville
+      institution_department: Caesar Kleberg Wildlife Research Institute
+  - given: C. Brad
+    surname: Dabbert
+    role: Associate Editor
+    sequence: additional
+    institution:
+      institution_name: Texas Tech University
+  - given: Stephen J.
+    surname: DeMaso
+    role: Associate Editor
+    sequence: additional
+    institution:
+      institution_name: U.S. Fish and Wildlife Service
+  - given: Kenneth
+    surname: Duren
+    role: Associate Editor
+    sequence: additional
+    institution:
+      institution_name: Pennsylvania Game Commission
+  - given: James A.
+    surname: Martin
+    role: Associate Editor
+    sequence: additional
+    institution:
+      institution_name: University of Georgia
+  - given: Kelly S.
+    surname: Reyna
+    role: Associate Editor
+    sequence: additional
+    institution:
+      institution_name: Texas A&M University-Commerce
+  - given: Evan P.
+    surname: Tanner
+    role: Associate Editor
+    sequence: additional
+    institution:
+      institution_name: Texas A&M University-Kingsville
+      institution_department: Caesar Kleberg Wildlife Research Institute
+  - given: Theron M.
+    surname: Terhune II
+    role: Associate Editor
+    sequence: additional
+    institution:
+      institution_name: Orton Plantation
+  - given: Molly K.
+    surname: Foley
+    role: Editorial Assistant
+    sequence: additional
+    institution:
+      institution_name: National Bobwhite & Grassland Initiative
+
+event_metadata:
+  conference_name: "Quail 9: National Quail Symposium"
+  conference_number: 9
+  conference_location: Springfield, Missouri
+  conference_date:
+    start_month: 08
+    start_year: 2022
+    start_day: 01
+    end_month: 08
+    end_year: 2022
+    end_day: 05
+
+proceedings_metadata:
+  proceedings_title: "Quail 9: National Quail Symposium Proceedings"
+  publisher: Clemson University, National Bobwhite Conservation Initiative Technical Committee
+  publication_date:
+    year: 2022
