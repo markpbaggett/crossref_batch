@@ -6,6 +6,7 @@ authors = ["Mark Baggett <mbagget1@utk.edu>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
+argparse = "^1.4.0"
 
 [tool.poetry.dev-dependencies]
 
