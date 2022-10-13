@@ -8,6 +8,12 @@ class BaseProperty:
         self.root_as_str = etree.tostring(self.root)
 
 
+class Proceeding(BaseProperty):
+    def __init__(self, path):
+        super().__init__(path)
+        self.contributors = Contributors(path).contributors
+
+
 class Contributors(BaseProperty):
     def __init__(self, path):
         super().__init__(path)
@@ -40,7 +46,16 @@ class Contributors(BaseProperty):
         return final
 
 
+class Title(BaseProperty):
+    def __init__(self, path):
+        super().__init__(path)
+
+
+class DOI(BaseProperty):
+    def __init__(self, path):
+        super().__init__(path)
+
 
 if __name__ == "__main__":
-    x = Contributors('output/output/23.xml')
+    x = Proceeding('output/output/23.xml')
     print(x.contributors)
