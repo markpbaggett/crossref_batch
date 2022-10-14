@@ -12,19 +12,14 @@ class Proceeding(BaseProperty):
     def __init__(self, path):
         super().__init__(path)
         self.contributors = Contributors(path).contributors
+        self.title = Title(path).titles[0]
+        self.dois = DOI(path).dois
 
 
 class Contributors(BaseProperty):
     def __init__(self, path):
         super().__init__(path)
         self.contributors = self.__find_contributors()
-
-    def __find_authors(self):
-        self.various_titles['plain'] = [thing.text for thing in self.root.xpath(
-            'mods:titleInfo[not(@supplied)]/mods:title',
-            namespaces=self.namespaces
-        )]
-        return
 
     def __find_contributors(self):
         final = []
@@ -49,13 +44,21 @@ class Contributors(BaseProperty):
 class Title(BaseProperty):
     def __init__(self, path):
         super().__init__(path)
+        self.titles = self.__get_title()
+
+    def __get_title(self):
+        return [title.text for title in self.root.xpath('/documents/document/title')]
 
 
 class DOI(BaseProperty):
     def __init__(self, path):
         super().__init__(path)
+        self.dois = self.__get_doi()
+
+    def __get_doi(self):
+        return [doi.text for doi in self.root.xpath('/documents/document/fields/field[@name="doi"]/value')]
 
 
 if __name__ == "__main__":
     x = Proceeding('output/output/23.xml')
-    print(x.contributors)
+    print(x.dois)
