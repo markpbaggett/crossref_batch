@@ -1,4 +1,5 @@
 from lxml import etree
+import arrow
 
 
 class BaseProperty:
@@ -13,7 +14,7 @@ class Proceeding(BaseProperty):
         super().__init__(path)
         self.contributors = Contributors(path).contributors
         self.title = Title(path).titles[0]
-        self.dois = DOI(path).dois
+        self.doi = DOI(path).doi_data
 
 
 class Contributors(BaseProperty):
@@ -53,12 +54,24 @@ class Title(BaseProperty):
 class DOI(BaseProperty):
     def __init__(self, path):
         super().__init__(path)
-        self.dois = self.__get_doi()
+        self.doi = self.__get_doi()
+        self.coverpage = self.__get_resource()
+        self.doi_data = self.__build_doi_object()
 
     def __get_doi(self):
-        return [doi.text for doi in self.root.xpath('/documents/document/fields/field[@name="doi"]/value')]
+        return [doi.text for doi in self.root.xpath('/documents/document/fields/field[@name="doi"]/value')][0]
+
+    def __get_resource(self):
+        return [url.text for url in self.root.xpath('/documents/document/coverpage-url')][0]
+
+    def __build_doi_object(self):
+        return {
+            "doi": self.doi.replace("https://doi.org/", ""),
+            "resource": self.coverpage,
+            "timestamp": str(arrow.utcnow().format("YYYYMMDDHHmmss"))
+        }
 
 
 if __name__ == "__main__":
     x = Proceeding('output/output/23.xml')
-    print(x.dois)
+    print(x.doi)
