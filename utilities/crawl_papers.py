@@ -15,6 +15,7 @@ class Proceeding(BaseProperty):
         self.contributors = Contributors(path).contributors
         self.title = Title(path).titles[0]
         self.doi = DOI(path).doi_data
+        self.publication_date = PublicationDate(path).publication_date
 
 
 class Contributors(BaseProperty):
@@ -72,6 +73,24 @@ class DOI(BaseProperty):
         }
 
 
+class PublicationDate(BaseProperty):
+    def __init__(self, path):
+        super().__init__(path)
+        self.publication_date = [
+            date.text for date in self.root.xpath('/documents/document/publication-date')
+        ][0].split('-')[0]
+
+
+class Pages(BaseProperty):
+    def __init__(self, path):
+        super().__init__(path)
+
+
+class CitationList(BaseProperty):
+    def __init__(self, path):
+        super().__init__(path)
+
+
 if __name__ == "__main__":
     x = Proceeding('output/output/23.xml')
-    print(x.doi)
+    print(x.publication_date)
