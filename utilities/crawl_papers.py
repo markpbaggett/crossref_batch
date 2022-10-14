@@ -1,5 +1,7 @@
 from lxml import etree
 import arrow
+import yaml
+from lxml.builder import ElementMaker
 
 
 class BaseProperty:
@@ -91,6 +93,58 @@ class CitationList(BaseProperty):
         super().__init__(path)
 
 
+class DoiBatchWriter:
+    def __init__(self, output_file, yaml_config):
+        self.output_file = output_file
+        self.proceedings_metadata = yaml.safe_load(open(yaml_config, "r"))
+        self.head = self.proceedings_metadata['head']
+        self.cr = self.__build_namespace("http://www.crossref.org/schema/4.3.7", 'cr')
+        self.response = self.__build_response().strip()
+
+    @staticmethod
+    def __build_namespace(uri, short):
+        return ElementMaker(
+            namespace=uri,
+            nsmap={
+                short: uri,
+            }
+        )
+
+    def __build_response(self):
+        return etree.tostring(
+            self.__build_xml(),
+            pretty_print=True
+        )
+
+    def __build_xml(self):
+        return self.cr.doi_batch(
+            self.__build_head()
+        )
+
+    def __build_head(self):
+        return self.cr.head(
+            self.cr.doi_batch_id(
+                self.head['doi_batch_id']
+            ),
+            self.cr.timestamp(
+                self.head['timestamp']
+            ),
+            self.cr.depositor(
+                self.cr.depositor_name(
+                    self.head['depositor']['depositor_name']
+                ),
+                self.cr.depositor_email(
+                    self.head['depositor']['email_address']
+                )
+            ),
+            self.cr.registrant(
+                self.head['registrant']
+            )
+        )
+
+
+
 if __name__ == "__main__":
-    x = Proceeding('output/output/23.xml')
-    print(x.publication_date)
+    path_to_proceedings_metadata = "data/quail.yml"
+    x = DoiBatchWriter('test.xml', path_to_proceedings_metadata).response
+    print(x)

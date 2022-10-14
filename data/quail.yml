@@ -86,3 +86,11 @@ proceedings_metadata:
   publisher: Clemson University, National Bobwhite Conservation Initiative Technical Committee
   publication_date:
     year: 2022
+
+head:
+  doi_batch_id: utk_nqsp_9_10_2022
+  timestamp: "20221014080808"
+  depositor:
+    depositor_name: Mark Baggett
+    email_address: mbagget1@utk.edu
+  registrant: University of Tennessee

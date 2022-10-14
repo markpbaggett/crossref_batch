@@ -9,6 +9,7 @@ python = "^3.10"
 argparse = "^1.4.0"
 lxml = "^4.9.1"
 arrow = "^1.2.3"
+PyYAML = "^6.0"
 
 [tool.poetry.dev-dependencies]
 
