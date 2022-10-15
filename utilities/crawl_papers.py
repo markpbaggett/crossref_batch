@@ -118,7 +118,8 @@ class DoiBatchWriter:
 
     def __build_xml(self):
         return self.cr.doi_batch(
-            self.__build_head()
+            self.__build_head(),
+            self.__build_body()
         )
 
     def __build_head(self):
@@ -142,6 +143,53 @@ class DoiBatchWriter:
             )
         )
 
+    def __build_body(self):
+        return self.cr.body(
+            self.cr.conference(
+                self.__build_contributors()
+            )
+        )
+
+    def __build_contributors(self):
+        """Build a list of contributors and unpack them into an element with the unpack operator (*)."""
+        i = 0
+        final_contributors = []
+        for person in self.proceedings_metadata['contributors']:
+            sequence = 'first'
+            department = ''
+            suffix = ''
+            if i != 0:
+                sequence = "additional"
+            if 'suffix' in person:
+                suffix = person['suffix']
+            if 'institution_department' in person['institution']:
+                department = person['institution']['institution_department']
+            final_contributors.append(
+                self.cr.person_name(
+                    self.cr.given_name(
+                        person['given']
+                    ),
+                    self.cr.surname(
+                        person['surname']
+                    ),
+                    self.cr.suffix(
+                        suffix
+                    ),
+                    self.cr.institution(
+                        self.cr.institution(
+                            self.cr.institution_name(
+                                person['institution']['institution_name']
+                            ),
+                            self.cr.institution_department(
+                                department
+                            )
+                        )
+                    ),
+                    sequence=sequence,
+                    contributor_role=person['role']
+                )
+            )
+        return self.cr.contributors(*final_contributors)
 
 
 if __name__ == "__main__":
