@@ -98,7 +98,7 @@ class DoiBatchWriter:
         self.output_file = output_file
         self.proceedings_metadata = yaml.safe_load(open(yaml_config, "r"))
         self.head = self.proceedings_metadata['head']
-        self.cr = self.__build_namespace("http://www.crossref.org/schema/4.3.7", 'cr')
+        self.cr = self.__build_namespace("http://www.crossref.org/schema/4.4.2", 'cr')
         self.response = self.__build_response().strip()
 
     @staticmethod
@@ -119,7 +119,8 @@ class DoiBatchWriter:
     def __build_xml(self):
         return self.cr.doi_batch(
             self.__build_head(),
-            self.__build_body()
+            self.__build_body(),
+            version='4.4.2'
         )
 
     def __build_head(self):
@@ -195,4 +196,5 @@ class DoiBatchWriter:
 if __name__ == "__main__":
     path_to_proceedings_metadata = "data/quail.yml"
     x = DoiBatchWriter('test.xml', path_to_proceedings_metadata).response
-    print(x)
+    with open('example.xml', 'wb') as example:
+        example.write(x)
