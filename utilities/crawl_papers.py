@@ -151,7 +151,8 @@ class DoiBatchWriter:
         return self.cr.body(
             self.cr.conference(
                 self.__build_contributors(),
-                self.__build_event_metadata()
+                self.__build_event_metadata(),
+                self.__build_proceedings_metadata()
             )
         )
 
@@ -215,6 +216,24 @@ class DoiBatchWriter:
                 end_year=str(self.proceedings_metadata['event_metadata']['conference_date']['end_year']),
                 end_day=str(self.proceedings_metadata['event_metadata']['conference_date']['end_day']),
             )
+        )
+
+    def __build_proceedings_metadata(self):
+        return self.cr.proceedings_metadata(
+            self.cr.proceedings_title(
+                self.proceedings_metadata['proceedings_metadata']['proceedings_title']
+            ),
+            self.cr.publisher(
+                self.cr.publisher_title(
+                    self.proceedings_metadata['proceedings_metadata']['publisher']
+                )
+            ),
+            self.cr.publication_date(
+                self.cr.year(
+                    str(self.proceedings_metadata['proceedings_metadata']['publication_date']['year'])
+                )
+            ),
+            language='en'
         )
 
 
