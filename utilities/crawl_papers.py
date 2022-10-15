@@ -98,7 +98,10 @@ class DoiBatchWriter:
         self.output_file = output_file
         self.proceedings_metadata = yaml.safe_load(open(yaml_config, "r"))
         self.head = self.proceedings_metadata['head']
-        self.cr = self.__build_namespace("http://www.crossref.org/schema/4.4.2", 'cr')
+        self.cr = self.__build_namespace(
+            "http://www.crossref.org/schema/4.4.2",
+            'cr'
+        )
         self.response = self.__build_response().strip()
 
     @staticmethod
@@ -147,7 +150,8 @@ class DoiBatchWriter:
     def __build_body(self):
         return self.cr.body(
             self.cr.conference(
-                self.__build_contributors()
+                self.__build_contributors(),
+                self.__build_event_metadata()
             )
         )
 
@@ -191,6 +195,27 @@ class DoiBatchWriter:
                 )
             )
         return self.cr.contributors(*final_contributors)
+
+    def __build_event_metadata(self):
+        return self.cr.event_metadata(
+            self.cr.conference_name(
+                self.proceedings_metadata['event_metadata']['conference_name']
+            ),
+            self.cr.conference_number(
+                str(self.proceedings_metadata['event_metadata']['conference_number'])
+            ),
+            self.cr.conference_location(
+                self.proceedings_metadata['event_metadata']['conference_location']
+            ),
+            self.cr.conference_date(
+                start_month=str(self.proceedings_metadata['event_metadata']['conference_date']['start_month']),
+                start_year=str(self.proceedings_metadata['event_metadata']['conference_date']['start_year']),
+                start_day=str(self.proceedings_metadata['event_metadata']['conference_date']['start_day']),
+                end_month=str(self.proceedings_metadata['event_metadata']['conference_date']['end_month']),
+                end_year=str(self.proceedings_metadata['event_metadata']['conference_date']['end_year']),
+                end_day=str(self.proceedings_metadata['event_metadata']['conference_date']['end_day']),
+            )
+        )
 
 
 if __name__ == "__main__":
