@@ -2,6 +2,7 @@ from lxml import etree
 import arrow
 import yaml
 from lxml.builder import ElementMaker
+import os
 
 
 class BaseProperty:
@@ -62,17 +63,24 @@ class DOI(BaseProperty):
         self.doi_data = self.__build_doi_object()
 
     def __get_doi(self):
-        return [doi.text for doi in self.root.xpath('/documents/document/fields/field[@name="doi"]/value')][0]
+        matches = [doi.text for doi in self.root.xpath('/documents/document/fields/field[@name="doi"]/value')]
+        if len(matches) > 0:
+            return matches[0]
+        else:
+            return None
 
     def __get_resource(self):
         return [url.text for url in self.root.xpath('/documents/document/coverpage-url')][0]
 
     def __build_doi_object(self):
-        return {
-            "doi": self.doi.replace("https://doi.org/", ""),
-            "resource": self.coverpage,
-            "timestamp": str(arrow.utcnow().format("YYYYMMDDHHmmss"))
-        }
+        if self.doi:
+            return {
+                "doi": self.doi.replace("https://doi.org/", ""),
+                "resource": self.coverpage,
+                "timestamp": str(arrow.utcnow().format("YYYYMMDDHHmmss"))
+            }
+        else:
+            return None
 
 
 class PublicationDate(BaseProperty):
@@ -98,10 +106,12 @@ class DoiBatchWriter:
         self.output_file = output_file
         self.proceedings_metadata = yaml.safe_load(open(yaml_config, "r"))
         self.head = self.proceedings_metadata['head']
+        self.path_to_proceedings = self.proceedings_metadata['path']
         self.cr = self.__build_namespace(
             "http://www.crossref.org/schema/4.4.2",
             'cr'
         )
+        self.__crawl_conference_papers()
         self.response = self.__build_response().strip()
 
     @staticmethod
@@ -235,6 +245,13 @@ class DoiBatchWriter:
             ),
             language='en'
         )
+
+    def __crawl_conference_papers(self):
+        for path, directories, files in os.walk(self.path_to_proceedings):
+            for file in files:
+                proceeding = Proceeding(f"{path}/{file}")
+                print(proceeding.contributors)
+        return
 
 
 if __name__ == "__main__":
