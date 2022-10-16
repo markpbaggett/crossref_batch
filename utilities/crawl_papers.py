@@ -268,7 +268,27 @@ class DoiBatchWriter:
     def __build_conference_papers(self):
         final_papers = []
         for paper in self.valid_papers:
-            final_papers.append(self.cr.conference_paper())
+            final_papers.append(self.cr.conference_paper(
+                self.cr.titles(
+                    self.cr.title(
+                        paper['title']
+                    )
+                ),
+                self.cr.publication_date(
+                    self.cr.year(
+                        paper['date']
+                    )
+                ),
+                self.cr.doi_data(
+                    self.cr.doi(
+                        paper['doi']['doi']
+                    ),
+                    self.cr.resource(
+                        paper['doi']['resource']
+                    )
+                ),
+                publication_type='full_text'
+            ))
         return final_papers
 
 
