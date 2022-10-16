@@ -268,7 +268,11 @@ class DoiBatchWriter:
     def __build_conference_papers(self):
         final_papers = []
         for paper in self.valid_papers:
+            paper_contributors = self.__build_paper_contributors(paper['contributors'])
             final_papers.append(self.cr.conference_paper(
+                self.cr.contributors(
+                    *self.__build_paper_contributors(paper_contributors)
+                ),
                 self.cr.titles(
                     self.cr.title(
                         paper['title']
@@ -290,6 +294,24 @@ class DoiBatchWriter:
                 publication_type='full_text'
             ))
         return final_papers
+
+    def __build_paper_contributors(self, contributors):
+        final_contributors = []
+        i = 0
+        sequence = 'first'
+        for contributor in contributors:
+            print(contributor)
+            if i != 0:
+                sequence = 'additional'
+            final_contributors.append(self.cr.person_name(
+                self.cr.surname(
+
+                ),
+                sequence=sequence,
+                contributor_role='author'
+            ))
+            i += 1
+        return final_contributors
 
 
 if __name__ == "__main__":
