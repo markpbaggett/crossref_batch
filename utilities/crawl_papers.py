@@ -19,6 +19,15 @@ class Proceeding(BaseProperty):
         self.title = Title(path).titles[0]
         self.doi = DOI(path).doi_data
         self.publication_date = PublicationDate(path).publication_date
+        self.full_proceeding = self.__get_full_proceeding()
+
+    def __get_full_proceeding(self):
+        return {
+            "contributors": self.contributors,
+            "title": self.title,
+            "doi": self.doi,
+            "date": self.publication_date
+        }
 
 
 class Contributors(BaseProperty):
@@ -111,7 +120,7 @@ class DoiBatchWriter:
             "http://www.crossref.org/schema/4.4.2",
             'cr'
         )
-        self.__crawl_conference_papers()
+        self.valid_papers = self.__crawl_conference_papers()
         self.response = self.__build_response().strip()
 
     @staticmethod
@@ -162,7 +171,8 @@ class DoiBatchWriter:
             self.cr.conference(
                 self.__build_contributors(),
                 self.__build_event_metadata(),
-                self.__build_proceedings_metadata()
+                self.__build_proceedings_metadata(),
+                *self.__build_conference_papers()
             )
         )
 
@@ -247,11 +257,19 @@ class DoiBatchWriter:
         )
 
     def __crawl_conference_papers(self):
+        valid_proceedings = []
         for path, directories, files in os.walk(self.path_to_proceedings):
             for file in files:
                 proceeding = Proceeding(f"{path}/{file}")
-                print(proceeding.contributors)
-        return
+                if proceeding.doi:
+                    valid_proceedings.append(proceeding.full_proceeding)
+        return valid_proceedings
+
+    def __build_conference_papers(self):
+        final_papers = []
+        for paper in self.valid_papers:
+            final_papers.append(self.cr.conference_paper())
+        return final_papers
 
 
 if __name__ == "__main__":
