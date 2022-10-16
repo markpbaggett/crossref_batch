@@ -268,10 +268,9 @@ class DoiBatchWriter:
     def __build_conference_papers(self):
         final_papers = []
         for paper in self.valid_papers:
-            paper_contributors = self.__build_paper_contributors(paper['contributors'])
             final_papers.append(self.cr.conference_paper(
                 self.cr.contributors(
-                    *self.__build_paper_contributors(paper_contributors)
+                    *self.__build_paper_contributors(paper['contributors'])
                 ),
                 self.cr.titles(
                     self.cr.title(
@@ -300,18 +299,42 @@ class DoiBatchWriter:
         i = 0
         sequence = 'first'
         for contributor in contributors:
-            print(contributor)
+            given = contributor['fname']
+            if 'mname' in contributor:
+                given = f"{contributor['fname']} {contributor['mname']}"
             if i != 0:
                 sequence = 'additional'
             final_contributors.append(self.cr.person_name(
                 self.cr.surname(
-
+                    contributor['last']
+                ),
+                self.cr.given(
+                    given
+                ),
+                self.cr.suffix(
+                    self.__get_suffix_if_exists(contributor)
+                ),
+                self.cr.institution(
+                    self.__get_institution_name(contributor)
                 ),
                 sequence=sequence,
                 contributor_role='author'
             ))
             i += 1
         return final_contributors
+
+    @staticmethod
+    def __get_suffix_if_exists(contributor):
+        if 'suffix' in contributor:
+            return contributor['suffix']
+        else:
+            return ""
+
+    def __get_institution_name(self, contributor):
+        if 'institution' in contributor:
+            return self.cr.institution_name(contributor['institution'])
+        else:
+            return self.cr.institution_name()
 
 
 if __name__ == "__main__":
