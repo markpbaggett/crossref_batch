@@ -312,7 +312,7 @@ class DoiBatchWriter:
                 self.cr.surname(
                     contributor['last']
                 ),
-                self.cr.given(
+                self.cr.given_name(
                     given
                 ),
                 self.cr.suffix(
