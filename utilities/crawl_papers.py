@@ -163,7 +163,7 @@ class DoiBatchWriter:
                 self.cr.depositor_name(
                     self.head['depositor']['depositor_name']
                 ),
-                self.cr.depositor_email(
+                self.cr.email_address(
                     self.head['depositor']['email_address']
                 )
             ),
@@ -208,13 +208,11 @@ class DoiBatchWriter:
                         suffix
                     ),
                     self.cr.institution(
-                        self.cr.institution(
-                            self.cr.institution_name(
-                                person['institution']['institution_name']
-                            ),
-                            self.cr.institution_department(
-                                department
-                            )
+                        self.cr.institution_name(
+                            person['institution']['institution_name']
+                        ),
+                        self.cr.institution_department(
+                            department
                         )
                     ),
                     sequence=sequence,
