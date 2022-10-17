@@ -248,7 +248,7 @@ class DoiBatchWriter:
                 self.proceedings_metadata['proceedings_metadata']['proceedings_title']
             ),
             self.cr.publisher(
-                self.cr.publisher_title(
+                self.cr.publisher_name(
                     self.proceedings_metadata['proceedings_metadata']['publisher']
                 )
             ),
