@@ -1,0 +1,27 @@
+from lxml import etree
+
+xslt_root = etree.XML('''
+<xsl:stylesheet version="1.0"
+ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+ <xsl:output omit-xml-declaration="yes" indent="yes"/>
+ <xsl:strip-space elements="*"/>
+
+ <xsl:template match="node()|@*">
+     <xsl:copy>
+       <xsl:apply-templates select="node()|@*"/>
+     </xsl:copy>
+ </xsl:template>
+
+ <xsl:template match=
+    "*[not(@*|*|comment()|processing-instruction())
+     and normalize-space()=''
+      ]"/>
+</xsl:stylesheet>
+''')
+
+transform = etree.XSLT(xslt_root)
+xml = etree.parse('example.xml')
+results = transform(xml)
+xml_string = etree.tostring(results,pretty_print=True)
+with open('lxml_test.xml', 'wb') as my_xml:
+    my_xml.write(xml_string)
