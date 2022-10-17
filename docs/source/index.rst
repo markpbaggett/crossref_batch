@@ -1,14 +1,13 @@
-.. UTK Crossref Batch Procedures documentation master file, created by
-   sphinx-quickstart on Sun Oct 16 19:31:01 2022.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
 
-Welcome to UTK Crossref Batch Procedures's documentation!
-=========================================================
+UTK Crossref Batch Procedures
+=============================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+   :glob:
+
+   contents/*
 
 
 
