@@ -257,6 +257,9 @@ class DoiBatchWriter:
                     str(self.proceedings_metadata['proceedings_metadata']['publication_date']['year'])
                 )
             ),
+            self.cr.noisbn(
+                reason="simple_series"
+            ),
             language='en'
         )
 
