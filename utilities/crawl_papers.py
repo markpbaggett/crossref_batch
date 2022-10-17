@@ -118,7 +118,11 @@ class DoiBatchWriter:
         self.path_to_proceedings = self.proceedings_metadata['path']
         self.cr = self.__build_namespace(
             "http://www.crossref.org/schema/4.4.2",
-            'cr'
+            None
+        )
+        self.xsi = self.__build_namespace(
+            "http://www.w3.org/2001/XMLSchema-instance",
+            "xsi"
         )
         self.valid_papers = self.__crawl_conference_papers()
         self.response = self.__build_response().strip()
@@ -139,11 +143,13 @@ class DoiBatchWriter:
         )
 
     def __build_xml(self):
-        return self.cr.doi_batch(
+        begin = self.cr.doi_batch(
             self.__build_head(),
-            self.__build_body(),
-            version='4.4.2'
+            self.__build_body()
         )
+        begin.attrib['{http://www.w3.org/2001/XMLSchema-instance}schemaLocation'] = "http://www.crossref.org/schema/4.4.2 http://www.crossref.org/schemas/crossref4.4.2.xsd"
+        begin.attrib['version'] = '4.4.2'
+        return begin
 
     def __build_head(self):
         return self.cr.head(
