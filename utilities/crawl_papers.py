@@ -207,14 +207,7 @@ class DoiBatchWriter:
                     self.cr.suffix(
                         suffix
                     ),
-                    self.cr.institution(
-                        self.cr.institution_name(
-                            person['institution']['institution_name']
-                        ),
-                        self.cr.institution_department(
-                            department
-                        )
-                    ),
+                    self.cr.affiliation(person['institution']['institution_name']),
                     sequence=sequence,
                     contributor_role=person['role']
                 )
@@ -312,18 +305,16 @@ class DoiBatchWriter:
             if i != 0:
                 sequence = 'additional'
             final_contributors.append(self.cr.person_name(
-                self.cr.surname(
-                    contributor['last']
-                ),
                 self.cr.given_name(
                     given
+                ),
+                self.cr.surname(
+                    contributor['last']
                 ),
                 self.cr.suffix(
                     self.__get_suffix_if_exists(contributor)
                 ),
-                self.cr.institution(
-                    self.__get_institution_name(contributor)
-                ),
+                *self.__get_institution_name(contributor),
                 sequence=sequence,
                 contributor_role='author'
             ))
@@ -338,10 +329,12 @@ class DoiBatchWriter:
             return ""
 
     def __get_institution_name(self, contributor):
+        affiliations = []
         if 'institution' in contributor:
-            return self.cr.institution_name(contributor['institution'])
+            affiliations.append(self.cr.affiliation(contributor['institution']))
         else:
-            return self.cr.institution_name()
+            affiliations.append(self.cr.affiliation())
+        return affiliations
 
 
 if __name__ == "__main__":
