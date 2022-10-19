@@ -33,3 +33,11 @@ Argument parsing allows you to specify this information from the CLI.
 
 When the above is ran, all :code:`metadata.xml` files are copied from the value of the :code:`-p` flag to the value of
 the :code:`-o` flag.
+
+-------------------------------
+Encoding of Digital Commons XML
+-------------------------------
+
+XML files from Digital Commons are not encoded as :code:`UTF-8`. Instead, these documents are encoded as :code:`iso-8859-1`.
+This is important because Crossref expects :code:`UTF-8` and we must be careful to create this.
+
