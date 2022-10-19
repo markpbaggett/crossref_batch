@@ -22,6 +22,6 @@ xslt_root = etree.XML('''
 transform = etree.XSLT(xslt_root)
 xml = etree.parse('example.xml')
 results = transform(xml)
-xml_string = etree.tostring(results,pretty_print=True)
+xml_string = etree.tostring(results, pretty_print=True, encoding='iso-8859-1')
 with open('lxml_test.xml', 'wb') as my_xml:
     my_xml.write(xml_string)
