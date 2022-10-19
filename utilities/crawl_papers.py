@@ -8,8 +8,13 @@ import os
 class BaseProperty:
     def __init__(self, path):
         self.path = path
-        self.root = etree.parse(path)
+        self.root = self.__decode(path)
         self.root_as_str = etree.tostring(self.root)
+
+    @staticmethod
+    def __decode(path_to_file):
+        with open(path_to_file, 'rb') as xml_file:
+            return etree.parse(xml_file)
 
 
 class Proceeding(BaseProperty):
@@ -139,7 +144,9 @@ class DoiBatchWriter:
     def __build_response(self):
         return etree.tostring(
             self.__build_xml(),
-            pretty_print=True
+            pretty_print=True,
+            xml_declaration=True,
+            encoding='iso-8859-1'
         )
 
     def __build_xml(self):
