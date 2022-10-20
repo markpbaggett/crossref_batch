@@ -128,3 +128,56 @@ contributor can also have a :code:`suffix` and a :code:`institution_department` 
           institution_name: Texas A&M University-Kingsville
           institution_department: Caesar Kleberg Wildlife Research Institute
 
+Event Metadata about the Conference
+===================================
+
+The :code:`event_metadata` key contains all information about the conference.  All included keys are currently
+required.
+
+.. code-block:: yaml
+
+    event_metadata:
+      conference_name: "Quail 9: National Quail Symposium"
+      conference_number: 9
+      conference_location: Springfield, Missouri
+      conference_date:
+        start_month: 08
+        start_year: 2022
+        start_day: 01
+        end_month: 08
+        end_year: 2022
+        end_day: 05
+
+Metadata about the Conference Series
+====================================
+
+The :code:`proceedings_series_metadata` key includes all data about the conference.  Currently, only conference series
+are supported.  All keys beelow are required.
+
+.. code-block:: yaml
+
+    proceedings_series_metadata:
+      proceedings_title: "Quail 9: National Quail Symposium Proceedings"
+      publisher: Clemson University, National Bobwhite Conservation Initiative Technical Committee
+      publication_date:
+        year: 2022
+      volume: 9
+      series_metadata:
+        titles:
+          title: National Quail Symposium Proceedings
+        issn: 2573-5667
+
+Depositor Information
+=====================
+
+The :code:`head` key holds all information about this deposit. All elements are required.
+
+.. code-block:: yaml
+
+    head:
+      doi_batch_id: utk_nqsp_9_10_2022
+      timestamp: "20221014080808"
+      depositor:
+        depositor_name: Mark Baggett
+        email_address: mbagget1@utk.edu
+      registrant: University of Tennessee
