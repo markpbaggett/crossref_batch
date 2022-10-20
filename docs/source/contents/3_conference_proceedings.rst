@@ -69,3 +69,62 @@ The element :code:`MAY` include:
 * 0-1 :code:`publisher_item`
 * 0-1 :code:`archive_locations`
 * 0-1 :code:`doi_data`
+
+------------------------------------------------------
+Generating Metadata for Conference Proceedings Deposit
+------------------------------------------------------
+
+To generate a metadata upload, first build a :code:`YAML` file that includes:
+
+* the path to the files that describe your papers
+* the various contributors responsible for the conference
+* event metadata about the conference
+* metadata about the conference series
+* information about who is depositing the metadata
+
+Adding Path to Files
+====================
+
+The path to files is defined with a :code:`path` key and the value of where to find the files on disk. Recursive file
+submission is allowed (your metadata files don't need to be in 1 directory).
+
+.. code-block:: yaml
+
+    path: "output/output"
+
+Adding Contributors
+===================
+
+Contributors are defined in a :code:`contributors` key and describe who is related to the conference. There are many
+elements allowed here, but only a few are used by our code.
+
+The value is an array. Currently, each value in the array must have a :code:`given` name that includes first / middle name, a
+:code:`surname` that is the last name, a :code:`role` and a :code:`sequence` value, and an :code:`insitution` element with
+an :code:`institution_name`.  The :code:`role` element must be one of: author, editor, chair, reviewer, review-assistant,
+stats-reviewer, reviewer-external, reader, translator. The :code:`sequence` must  be one of: first or additional. A
+contributor can also have a :code:`suffix` and a :code:`institution_department` in its :code:`institution`.
+
+.. code-block:: yaml
+
+    contributors:
+      - given: Frank R.
+        surname: Thompson
+        suffix: III
+        role: editor
+        sequence: first
+        institution:
+          institution_name: USDA Forest Service
+      - given: Roger D.
+        surname: Applegate
+        role: editor
+        sequence: additional
+        institution:
+          institution_name: Tennessee Wildlife Resources Agency
+      - given: Leonard A.
+        surname: Brennan
+        role: editor
+        sequence: additional
+        institution:
+          institution_name: Texas A&M University-Kingsville
+          institution_department: Caesar Kleberg Wildlife Research Institute
+
