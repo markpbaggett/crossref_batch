@@ -214,7 +214,16 @@ class DoiBatchWriter:
                     self.cr.suffix(
                         suffix
                     ),
-                    self.cr.affiliation(person['institution']['institution_name']),
+                    self.cr.affiliations(
+                        self.cr.institution(
+                            self.cr.institution_name(
+                                person['institution']['institution_name']
+                            ),
+                            self.cr.institution_department(
+                                department
+                            )
+                        ),
+                    ),
                     sequence=sequence,
                     contributor_role=person['role']
                 )
