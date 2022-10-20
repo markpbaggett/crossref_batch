@@ -122,7 +122,7 @@ class DoiBatchWriter:
         self.head = self.proceedings_metadata['head']
         self.path_to_proceedings = self.proceedings_metadata['path']
         self.cr = self.__build_namespace(
-            "http://www.crossref.org/schema/4.4.2",
+            "http://www.crossref.org/schema/5.3.1",
             None
         )
         self.xsi = self.__build_namespace(
@@ -154,8 +154,8 @@ class DoiBatchWriter:
             self.__build_head(),
             self.__build_body()
         )
-        begin.attrib['{http://www.w3.org/2001/XMLSchema-instance}schemaLocation'] = "http://www.crossref.org/schema/4.4.2 http://www.crossref.org/schemas/crossref4.4.2.xsd"
-        begin.attrib['version'] = '4.4.2'
+        begin.attrib['{http://www.w3.org/2001/XMLSchema-instance}schemaLocation'] = "http://www.crossref.org/schema/5.3.1 http://www.crossref.org/schemas/crossref5.3.1.xsd"
+        begin.attrib['version'] = '5.3.1'
         return begin
 
     def __build_head(self):
