@@ -243,24 +243,30 @@ class DoiBatchWriter:
         )
 
     def __build_proceedings_metadata(self):
-        return self.cr.proceedings_metadata(
+        return self.cr.proceedings_series_metadata(
+            self.cr.series_metadata(
+                self.cr.titles(
+                    self.cr.title(self.proceedings_metadata['proceedings_series_metadata']['series_metadata']['titles']['title'])),
+                self.cr.issn(
+                    str(self.proceedings_metadata['proceedings_series_metadata']['series_metadata']['issn'])
+                )
+            ),
             self.cr.proceedings_title(
-                self.proceedings_metadata['proceedings_metadata']['proceedings_title']
+                self.proceedings_metadata['proceedings_series_metadata']['proceedings_title']
             ),
             self.cr.publisher(
                 self.cr.publisher_name(
-                    self.proceedings_metadata['proceedings_metadata']['publisher']
+                    self.proceedings_metadata['proceedings_series_metadata']['publisher']
                 )
             ),
             self.cr.publication_date(
                 self.cr.year(
-                    str(self.proceedings_metadata['proceedings_metadata']['publication_date']['year'])
+                    str(self.proceedings_metadata['proceedings_series_metadata']['publication_date']['year'])
                 )
             ),
             self.cr.noisbn(
                 reason="simple_series"
-            ),
-            language='en'
+            )
         )
 
     def __crawl_conference_papers(self):

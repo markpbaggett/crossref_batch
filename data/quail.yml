@@ -89,6 +89,17 @@ proceedings_metadata:
   publication_date:
     year: 2022
 
+proceedings_series_metadata:
+  proceedings_title: "Quail 9: National Quail Symposium Proceedings"
+  publisher: Clemson University, National Bobwhite Conservation Initiative Technical Committee
+  publication_date:
+    year: 2022
+  volume: 9
+  series_metadata:
+    titles:
+      title: National Quail Symposium Proceedings
+    issn: 2573-5667
+
 head:
   doi_batch_id: utk_nqsp_9_10_2022
   timestamp: "20221014080808"
