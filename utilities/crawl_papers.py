@@ -353,9 +353,17 @@ class DoiBatchWriter:
     def __get_institution_name(self, contributor):
         affiliations = []
         if 'institution' in contributor:
-            affiliations.append(self.cr.affiliation(contributor['institution']))
+            affiliations.append(
+                self.cr.affiliations(
+                    self.cr.institution(
+                        self.cr.institution_name(
+                            contributor['institution']
+                        )
+                    )
+                )
+            )
         else:
-            affiliations.append(self.cr.affiliation())
+            affiliations.append(self.cr.affiliations())
         return affiliations
 
 
