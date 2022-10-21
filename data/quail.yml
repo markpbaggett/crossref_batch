@@ -98,11 +98,11 @@ proceedings_series_metadata:
   series_metadata:
     titles:
       title: National Quail Symposium Proceedings
-    issn: 2573-5667
+    issn: 2573-5683
 
 head:
   doi_batch_id: utk_nqsp_9_10_2022
-  timestamp: "20221014080808"
+  timestamp: "20221021080808"
   depositor:
     depositor_name: Mark Baggett
     email_address: mbagget1@utk.edu
