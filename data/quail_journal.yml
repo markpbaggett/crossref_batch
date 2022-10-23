@@ -1,0 +1,87 @@
+path: "output/output"
+
+type: journal_articles
+
+contributors:
+  - given: Frank R.
+    surname: Thompson
+    suffix: III
+    role: editor
+    sequence: first
+    institution:
+      institution_name: USDA Forest Service
+  - given: Roger D.
+    surname: Applegate
+    role: editor
+    sequence: additional
+    institution:
+      institution_name: Tennessee Wildlife Resources Agency
+  - given: Leonard A.
+    surname: Brennan
+    role: editor
+    sequence: additional
+    institution:
+      institution_name: Texas A&M University-Kingsville
+      institution_department: Caesar Kleberg Wildlife Research Institute
+  - given: C. Brad
+    surname: Dabbert
+    role: editor
+    sequence: additional
+    institution:
+      institution_name: Texas Tech University
+  - given: Stephen J.
+    surname: DeMaso
+    role: editor
+    sequence: additional
+    institution:
+      institution_name: U.S. Fish and Wildlife Service
+  - given: Kenneth
+    surname: Duren
+    role: editor
+    sequence: additional
+    institution:
+      institution_name: Pennsylvania Game Commission
+  - given: James A.
+    surname: Martin
+    role: editor
+    sequence: additional
+    institution:
+      institution_name: University of Georgia
+  - given: Kelly S.
+    surname: Reyna
+    role: editor
+    sequence: additional
+    institution:
+      institution_name: Texas A&M University-Commerce
+  - given: Evan P.
+    surname: Tanner
+    role: editor
+    sequence: additional
+    institution:
+      institution_name: Texas A&M University-Kingsville
+      institution_department: Caesar Kleberg Wildlife Research Institute
+  - given: Theron M.
+    surname: Terhune II
+    role: editor
+    sequence: additional
+    institution:
+      institution_name: Orton Plantation
+  - given: Molly K.
+    surname: Foley
+    role: editor
+    sequence: additional
+    institution:
+      institution_name: National Bobwhite & Grassland Initiative
+
+journal_metadata:
+  full_title:
+    - Quail
+    - National Quail Symposium proceedings
+    - Proceedings of the ... National Quail Symposium
+    - Proceedings of the National Quail Symposia
+    - "Gamebird : a joint conference of Quail and Perdix"
+    - NQSP
+  abbrev_title: NQSP
+  issn:
+    print: 2573-5667
+    online: 2573-5683
