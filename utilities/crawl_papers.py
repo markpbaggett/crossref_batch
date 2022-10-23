@@ -115,7 +115,7 @@ class CitationList(BaseProperty):
         super().__init__(path)
 
 
-class DoiBatchWriter:
+class DoiProceedingsBatchWriter:
     def __init__(self, output_file, yaml_config):
         self.output_file = output_file
         self.proceedings_metadata = yaml.safe_load(open(yaml_config, "r"))
@@ -367,8 +367,127 @@ class DoiBatchWriter:
         return affiliations
 
 
+class DoiJournalBatchWriter:
+    def __init__(self, output_file, yaml_config):
+        self.output_file = output_file
+        self.proceedings_metadata = yaml.safe_load(open(yaml_config, "r"))
+        self.head = self.proceedings_metadata['head']
+        self.path_to_proceedings = self.proceedings_metadata['path']
+        self.cr = self.__build_namespace(
+            "http://www.crossref.org/schema/5.3.1",
+            None
+        )
+        self.xsi = self.__build_namespace(
+            "http://www.w3.org/2001/XMLSchema-instance",
+            "xsi"
+        )
+        #self.valid_papers = self.__crawl_conference_papers()
+        self.response = self.__build_response().strip()
+
+    @staticmethod
+    def __build_namespace(uri, short):
+        return ElementMaker(
+            namespace=uri,
+            nsmap={
+                short: uri,
+            }
+        )
+
+    def __build_response(self):
+        return etree.tostring(
+            self.__build_xml(),
+            pretty_print=True,
+            xml_declaration=True,
+            encoding='iso-8859-1'
+        )
+
+    def __build_xml(self):
+        begin = self.cr.doi_batch(
+            self.__build_head(),
+            self.__build_body()
+        )
+        begin.attrib['{http://www.w3.org/2001/XMLSchema-instance}schemaLocation'] = "http://www.crossref.org/schema/5.3.1 http://www.crossref.org/schemas/crossref5.3.1.xsd"
+        begin.attrib['version'] = '5.3.1'
+        return begin
+
+    def __build_head(self):
+        return self.cr.head(
+            self.cr.doi_batch_id(
+                self.head['doi_batch_id']
+            ),
+            self.cr.timestamp(
+                self.head['timestamp']
+            ),
+            self.cr.depositor(
+                self.cr.depositor_name(
+                    self.head['depositor']['depositor_name']
+                ),
+                self.cr.email_address(
+                    self.head['depositor']['email_address']
+                )
+            ),
+            self.cr.registrant(
+                self.head['registrant']
+            )
+        )
+
+    def __build_body(self):
+        return self.cr.body(
+            self.cr.journal(
+                self.__build_journal_metadata(),
+                # self.__build_journal_issue(),
+                # self.__build_journal_articles()
+            )
+        )
+
+    def __build_journal_metadata(self):
+        return self.cr.journal_metadata(
+            *self.__get_full_titles(),
+            *self.__get_abrev_titles(),
+            *self.__get_issns()
+        )
+
+    def __get_full_titles(self):
+        full_titles = []
+        for title in self.proceedings_metadata['journal_metadata']['full_title']:
+            full_titles.append(self.cr.full_title(title))
+        return full_titles
+
+    def __get_issns(self):
+        issn_data = []
+        for issn in self.proceedings_metadata['journal_metadata']['issn_data']:
+            issn_data.append(
+                self.cr.issn(
+                    issn['issn'],
+                    media_type=issn['type']
+                )
+            )
+        return issn_data
+
+    def __get_abrev_titles(self):
+        abbrev_titles = []
+        for title in self.proceedings_metadata['journal_metadata']['abbrev_title']:
+            abbrev_titles.append(
+                self.cr.abbrev_title(
+                    title
+                )
+            )
+        return abbrev_titles
+
+    def __build_journal_issue(self):
+        return
+
+    def __build_journal_articles(self):
+        return
+
+
 if __name__ == "__main__":
-    path_to_proceedings_metadata = "data/quail.yml"
-    x = DoiBatchWriter('test.xml', path_to_proceedings_metadata).response
-    with open('example.xml', 'wb') as example:
+    # path_to_proceedings_metadata = "data/quail.yml"
+    # x = DoiProceedingsBatchWriter('test.xml', path_to_proceedings_metadata).response
+    # with open('example.xml', 'wb') as example:
+    #     example.write(x)
+
+    path_to_proceedings_metadata = "data/quail_journal.yml"
+    x = DoiJournalBatchWriter('test.xml', path_to_proceedings_metadata).response
+    with open('example_journal.xml', 'wb') as example:
         example.write(x)
