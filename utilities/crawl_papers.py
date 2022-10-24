@@ -381,7 +381,7 @@ class DoiJournalBatchWriter:
             "http://www.w3.org/2001/XMLSchema-instance",
             "xsi"
         )
-        #self.valid_papers = self.__crawl_conference_papers()
+        self.valid_papers = self.__crawl_conference_papers()
         self.response = self.__build_response().strip()
 
     @staticmethod
@@ -436,7 +436,7 @@ class DoiJournalBatchWriter:
             self.cr.journal(
                 self.__build_journal_metadata(),
                 self.__build_journal_issue(),
-                # self.__build_journal_articles()
+                *self.__build_journal_articles()
             )
         )
 
@@ -494,9 +494,6 @@ class DoiJournalBatchWriter:
             )
         )
 
-    def __build_journal_articles(self):
-        return
-
     def __build_contributors(self):
         """Build a list of contributors and unpack them into an element with the unpack operator (*)."""
         i = 0
@@ -537,6 +534,94 @@ class DoiJournalBatchWriter:
                 )
             )
         return self.cr.contributors(*final_contributors)
+
+    def __build_journal_articles(self):
+        final_papers = []
+        for paper in self.valid_papers:
+            final_papers.append(self.cr.journal_articles(
+                self.cr.titles(
+                    self.cr.title(
+                        paper['title']
+                    )
+                ),
+                self.cr.contributors(
+                    *self.__build_paper_contributors(paper['contributors'])
+                ),
+                self.cr.publication_date(
+                    self.cr.year(
+                        paper['date']
+                    )
+                ),
+                self.cr.doi_data(
+                    self.cr.doi(
+                        paper['doi']['doi']
+                    ),
+                    self.cr.resource(
+                        paper['doi']['resource']
+                    )
+                ),
+                publication_type='full_text'
+            ))
+        return final_papers
+
+    def __build_paper_contributors(self, contributors):
+        final_contributors = []
+        i = 0
+        sequence = 'first'
+        for contributor in contributors:
+            given = contributor['fname']
+            if 'mname' in contributor:
+                given = f"{contributor['fname']} {contributor['mname']}"
+            if i != 0:
+                sequence = 'additional'
+            final_contributors.append(self.cr.person_name(
+                self.cr.given_name(
+                    given
+                ),
+                self.cr.surname(
+                    contributor['last']
+                ),
+                self.cr.suffix(
+                    self.__get_suffix_if_exists(contributor)
+                ),
+                *self.__get_institution_name(contributor),
+                sequence=sequence,
+                contributor_role='author'
+            ))
+            i += 1
+        return final_contributors
+
+    def __crawl_conference_papers(self):
+        valid_proceedings = []
+        for path, directories, files in os.walk(self.path_to_proceedings):
+            for file in files:
+                proceeding = Proceeding(f"{path}/{file}")
+                if proceeding.doi:
+                    valid_proceedings.append(proceeding.full_proceeding)
+        return valid_proceedings
+
+    @staticmethod
+    def __get_suffix_if_exists(contributor):
+        if 'suffix' in contributor:
+            return contributor['suffix']
+        else:
+            return ""
+
+    def __get_institution_name(self, contributor):
+        affiliations = []
+        if 'institution' in contributor:
+            affiliations.append(
+                self.cr.affiliations(
+                    self.cr.institution(
+                        self.cr.institution_name(
+                            contributor['institution']
+                        )
+                    )
+                )
+            )
+        else:
+            affiliations.append(self.cr.affiliations())
+        return affiliations
 
 
 if __name__ == "__main__":
