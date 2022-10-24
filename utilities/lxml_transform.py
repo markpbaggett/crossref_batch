@@ -20,8 +20,8 @@ xslt_root = etree.XML('''
 ''')
 
 transform = etree.XSLT(xslt_root)
-xml = etree.parse('example.xml')
+xml = etree.parse('example_journal.xml')
 results = transform(xml)
 xml_string = etree.tostring(results, pretty_print=True, encoding='iso-8859-1')
-with open('lxml_test.xml', 'wb') as my_xml:
+with open('lxml_test_journal.xml', 'wb') as my_xml:
     my_xml.write(xml_string)

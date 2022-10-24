@@ -538,7 +538,7 @@ class DoiJournalBatchWriter:
     def __build_journal_articles(self):
         final_papers = []
         for paper in self.valid_papers:
-            final_papers.append(self.cr.journal_articles(
+            final_papers.append(self.cr.journal_article(
                 self.cr.titles(
                     self.cr.title(
                         paper['title']
