@@ -89,6 +89,16 @@ journal_metadata:
     - issn: 2573-5683
       type: electronic
 
+journal_issue:
+  publication_date:
+    year: "2022"
+  journal_volume:
+    volume: "9"
+  titles:
+    title: "Quail 9: National Quail Symposium"
+
+
+
 head:
   doi_batch_id: utk_nqsp_9_10_2022
   timestamp: "20221021080808"
