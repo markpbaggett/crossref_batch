@@ -75,6 +75,7 @@ contributors:
 
 journal_metadata:
   full_title:
+    - National Quail Symposium Proceedings
     - Quail
     - National Quail Symposium proceedings
     - Proceedings of the ... National Quail Symposium
@@ -88,6 +89,9 @@ journal_metadata:
       type: print
     - issn: 2573-5683
       type: electronic
+  doi_data:
+    doi: "10.7290/nqsp"
+    resource: "https://trace.tennessee.edu/nqsp/"
 
 journal_issue:
   publication_date:

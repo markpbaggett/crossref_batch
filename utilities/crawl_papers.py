@@ -444,7 +444,8 @@ class DoiJournalBatchWriter:
         return self.cr.journal_metadata(
             *self.__get_full_titles(),
             *self.__get_abrev_titles(),
-            *self.__get_issns()
+            *self.__get_issns(),
+            self.__get_doi()
         )
 
     def __get_full_titles(self):
@@ -463,6 +464,16 @@ class DoiJournalBatchWriter:
                 )
             )
         return issn_data
+
+    def __get_doi(self):
+        return self.cr.doi_data(
+            self.cr.doi(
+                self.proceedings_metadata['journal_metadata']['doi_data']['doi']
+            ),
+            self.cr.resource(
+                self.proceedings_metadata['journal_metadata']['doi_data']['resource']
+            )
+        )
 
     def __get_abrev_titles(self):
         abbrev_titles = []
