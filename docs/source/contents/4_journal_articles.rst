@@ -115,6 +115,150 @@ A completed :code:`journal_metadata` section may have other components but may l
         </doi_data>
     </journal_metadata>
 
+Journal Issue
+=============
+
+A :code:`journal_issue` tag is required for each :code:`journal` in a batch registration request.
+
+While there are many allowed sub-elements, a :code:`journal_issue` must always have 1-10 :code:`publication_date` tags
+that describe the date of publication. Multiple dates are allowed to allow for different dates of publication for online
+and print versions. If you have separate dates, you must use a :code:`@media-type` attribute to describe whether the date
+refers to the print or electronic. Each :code:`publication_date` must have exactly one :code:`year` but can also have
+0-1 :code:`month` or :code:`day` tags.  Only use the optional tags if you know the exact date.
+
+At UTK, we also try to describe known editors and reviewers in the :code:`contributors` section. Each contributor must
+have one of the following roles: author, editor, chair, reviewer, review-assistant, stats-reviewer, reviewer-external,
+reader, translator.  We do not put authors in this section but instead in the articles section. Each contributor can have
+various metadata elements.  See schema docs for more information.
+
+Each :code:`journal_issue` can have 0-1 :code:`titles` tag which acts as a container for the title and original language
+title elements. Only :code:`title` is required here unless it is a translation in which :code:`original_language_title`
+also becomes required.
+
+Finally, a :code:`journal_issue` can have 0-1 :code:`journal_volume` tags which acts as a ontainer for the journal
+volume and DOI assigned to an entire journal volume. You may register a DOI for an entire volume by including doi_data
+in journal_volume. If included, this element must have 0, 1 :code:`volume` tags which include the volume number.
+
+A completed :code:`journal_issue` section may have other components but may look like this:
+
+.. code-block:: xml
+
+    <journal_issue>
+        <contributors>
+          <person_name sequence="first" contributor_role="editor">
+            <given_name>Frank R.</given_name>
+            <surname>Thompson</surname>
+            <suffix>III</suffix>
+            <affiliations>
+              <institution>
+                <institution_name>USDA Forest Service</institution_name>
+              </institution>
+            </affiliations>
+          </person_name>
+          <person_name sequence="first" contributor_role="editor">
+            <given_name>Roger D.</given_name>
+            <surname>Applegate</surname>
+            <affiliations>
+              <institution>
+                <institution_name>Tennessee Wildlife Resources Agency</institution_name>
+              </institution>
+            </affiliations>
+          </person_name>
+          <person_name sequence="first" contributor_role="editor">
+            <given_name>Leonard A.</given_name>
+            <surname>Brennan</surname>
+            <affiliations>
+              <institution>
+                <institution_name>Texas A&amp;M University-Kingsville</institution_name>
+                <institution_department>Caesar Kleberg Wildlife Research Institute</institution_department>
+              </institution>
+            </affiliations>
+          </person_name>
+          <person_name sequence="first" contributor_role="editor">
+            <given_name>C. Brad</given_name>
+            <surname>Dabbert</surname>
+            <affiliations>
+              <institution>
+                <institution_name>Texas Tech University</institution_name>
+              </institution>
+            </affiliations>
+          </person_name>
+          <person_name sequence="first" contributor_role="editor">
+            <given_name>Stephen J.</given_name>
+            <surname>DeMaso</surname>
+            <affiliations>
+              <institution>
+                <institution_name>U.S. Fish and Wildlife Service</institution_name>
+              </institution>
+            </affiliations>
+          </person_name>
+          <person_name sequence="first" contributor_role="editor">
+            <given_name>Kenneth</given_name>
+            <surname>Duren</surname>
+            <affiliations>
+              <institution>
+                <institution_name>Pennsylvania Game Commission</institution_name>
+              </institution>
+            </affiliations>
+          </person_name>
+          <person_name sequence="first" contributor_role="editor">
+            <given_name>James A.</given_name>
+            <surname>Martin</surname>
+            <affiliations>
+              <institution>
+                <institution_name>University of Georgia</institution_name>
+              </institution>
+            </affiliations>
+          </person_name>
+          <person_name sequence="first" contributor_role="editor">
+            <given_name>Kelly S.</given_name>
+            <surname>Reyna</surname>
+            <affiliations>
+              <institution>
+                <institution_name>Texas A&amp;M University-Commerce</institution_name>
+              </institution>
+            </affiliations>
+          </person_name>
+          <person_name sequence="first" contributor_role="editor">
+            <given_name>Evan P.</given_name>
+            <surname>Tanner</surname>
+            <affiliations>
+              <institution>
+                <institution_name>Texas A&amp;M University-Kingsville</institution_name>
+                <institution_department>Caesar Kleberg Wildlife Research Institute</institution_department>
+              </institution>
+            </affiliations>
+          </person_name>
+          <person_name sequence="first" contributor_role="editor">
+            <given_name>Theron M.</given_name>
+            <surname>Terhune II</surname>
+            <affiliations>
+              <institution>
+                <institution_name>Orton Plantation</institution_name>
+              </institution>
+            </affiliations>
+          </person_name>
+          <person_name sequence="first" contributor_role="editor">
+            <given_name>Molly K.</given_name>
+            <surname>Foley</surname>
+            <affiliations>
+              <institution>
+                <institution_name>National Bobwhite &amp; Grassland Initiative</institution_name>
+              </institution>
+            </affiliations>
+          </person_name>
+        </contributors>
+        <titles>
+          <title>Quail 9: National Quail Symposium</title>
+        </titles>
+        <publication_date>
+          <year>2022</year>
+        </publication_date>
+        <journal_volume>
+          <volume>9</volume>
+        </journal_volume>
+    </journal_issue>
+
 ---------------------------------------------
 Creating Metadata about the Journal and Issue
 ---------------------------------------------
