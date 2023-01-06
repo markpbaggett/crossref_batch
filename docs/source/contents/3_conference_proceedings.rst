@@ -2,6 +2,11 @@
 Conference Proceedings
 ======================
 
+.. warning::
+    While Crossref allows you to mint DOIs for conference proceedings, please not that we do not model our conference
+    proceedings in VolJournals (e.g. NSQP) as conference proceedings.  While information here may be useful, please see
+    the Journal Articles section for procedures on batch registration of DOIs.
+
 Crossref allows you to perform batch operations for "series conference proceedings" and "nonseries conference proceedings."
 The elements allowed, required, and recommended vary based on the option you select. More details can be found about
 this in the `schema documentation <https://data.crossref.org/reports/help/schema_doc/5.3.1/index.html>`_.
@@ -194,7 +199,7 @@ with the parts described above and path to files.
 
 ----------------------
 Finalizing XML Deposit
-----------------------
+------------------
 
 Finally, run `lxml_trasform.py <https://github.com/markpbaggett/crossref_batch/blob/main/utilities/lxml_transform.py>`_
 to remove blank elements.
