@@ -1,6 +1,6 @@
-=================================
-Minting DOIs for Journal Articles
-=================================
+================
+Journal Articles
+================
 
 Crossref allows you to perform batch registration for journals and the volumes, issues, and articles being registered
 within the journal.  Within a journal instance you may register articles from a single issue by adding details to
@@ -267,4 +267,30 @@ Creating Metadata about the Journal and Issue
 --------------------
 Journal Batch Writer
 --------------------
+
+
+---------------
+Crawling Papers
+---------------
+
+Crawling papers and generating an XML upload can be done with
+`the script found here <https://github.com/markpbaggett/crossref_batch/blob/main/utilities/crawl_papers.py>`_.
+The script iterates over all XML files in a directory and creates an XML file according to the
+`Crossref 5.3.1 XML schema definition <https://data.crossref.org/schemas/common5.3.1.xsd>`_. The script needs a yml file
+with the parts described above and path to files.
+
+----------------------
+Finalizing XML Deposit
+----------------------
+
+Finally, run `lxml_trasform.py <https://github.com/markpbaggett/crossref_batch/blob/main/utilities/lxml_transform.py>`_
+to remove blank elements.
+
+Then, take that XML file and upload it to Crossref for testing.
+
+First, check that your `XML is wellformed and valid <https://apps.crossref.org/XSDParse/>`_.
+
+Next, upload your XML file to `the test system <https://test.crossref.org>`_ for proceesing.
+
+Finally, if all is good, upload to `the production system <https://doi.crossref.org>`_.
 
