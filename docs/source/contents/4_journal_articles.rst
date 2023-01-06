@@ -259,10 +259,220 @@ A completed :code:`journal_issue` section may have other components but may look
         </journal_volume>
     </journal_issue>
 
----------------------------------------------
-Creating Metadata about the Journal and Issue
----------------------------------------------
+Journal Article
+===============
 
+The :code:`journal` tag can have 0 - "unbounded" :code:`journal_article` tags that acts as a container for all
+information about a single journal article. Each :code:`journal_article` must have 1-20 :code:`titles`, 1-10
+:code:`publication_date`, and 1-1 :code:`doi_data` tags.
+
+The rules for each of these are the same as described in previous elements above, and we use them in the same way here.
+
+In addition to the required elements, we also add authors using the :code:`contributors` tag. Each :code:`person_name`
+in this section is assigned the author role.
+
+A completed journal article should look something like this:
+
+.. code-block:: xml
+
+    <journal_article publication_type="full_text">
+        <titles>
+          <title>Northern Bobwhite and Fire: A Review and Synthesis</title>
+        </titles>
+        <contributors>
+          <person_name sequence="first" contributor_role="author">
+            <given_name>David A</given_name>
+            <surname>Weber</surname>
+            <affiliations>
+              <institution>
+                <institution_name>University of Georgia</institution_name>
+              </institution>
+            </affiliations>
+          </person_name>
+          <person_name sequence="additional" contributor_role="author">
+            <given_name>Evan P</given_name>
+            <surname>Tanner</surname>
+            <affiliations>
+              <institution>
+                <institution_name>Caesar Kleberg Wildlife Research Institute</institution_name>
+              </institution>
+            </affiliations>
+          </person_name>
+          <person_name sequence="additional" contributor_role="author">
+            <given_name>Theron M.</given_name>
+            <surname>Terhune</surname>
+            <suffix>II</suffix>
+            <affiliations>
+              <institution>
+                <institution_name>Tall Timbers</institution_name>
+              </institution>
+            </affiliations>
+          </person_name>
+          <person_name sequence="additional" contributor_role="author">
+            <given_name>J. Morgan</given_name>
+            <surname>Varner</surname>
+            <affiliations>
+              <institution>
+                <institution_name>Tall Timbers</institution_name>
+              </institution>
+            </affiliations>
+          </person_name>
+          <person_name sequence="additional" contributor_role="author">
+            <given_name>James A.</given_name>
+            <surname>Martin</surname>
+            <affiliations>
+              <institution>
+                <institution_name>University of Georgia</institution_name>
+              </institution>
+            </affiliations>
+          </person_name>
+        </contributors>
+        <publication_date>
+          <year>2022</year>
+        </publication_date>
+        <doi_data>
+          <doi>10.7290/nqsp09V0ju</doi>
+          <resource>https://trace.tennessee.edu/nqsp/vol9/iss1/63</resource>
+        </doi_data>
+    </journal_article>
+
+-------------------------------------------------------
+Creating Metadata about the Journal, Issue, and Deposit
+-------------------------------------------------------
+
+Additional metadata beyond what is found in the article level metadata is needed for deposit and DOI registration.
+
+This metadata is added in a human-readable way using yaml. These yaml files should include everything needed to generate
+the missing elements for deposit.
+
+The :code:`path` property describes where the XML containing article level metadata can be found.
+
+.. code-block:: yaml
+
+    path: "metadata/output/vol9"
+
+The :code:`contributors` property describes the editors and reviewers of the volume or issue:
+
+.. code-block:: yaml
+
+    contributors:
+      - given: Frank R.
+        surname: Thompson
+        suffix: III
+        role: editor
+        sequence: first
+        institution:
+          institution_name: USDA Forest Service
+      - given: Roger D.
+        surname: Applegate
+        role: editor
+        sequence: additional
+        institution:
+          institution_name: Tennessee Wildlife Resources Agency
+      - given: Leonard A.
+        surname: Brennan
+        role: editor
+        sequence: additional
+        institution:
+          institution_name: Texas A&M University-Kingsville
+          institution_department: Caesar Kleberg Wildlife Research Institute
+      - given: C. Brad
+        surname: Dabbert
+        role: editor
+        sequence: additional
+        institution:
+          institution_name: Texas Tech University
+      - given: Stephen J.
+        surname: DeMaso
+        role: editor
+        sequence: additional
+        institution:
+          institution_name: U.S. Fish and Wildlife Service
+      - given: Kenneth
+        surname: Duren
+        role: editor
+        sequence: additional
+        institution:
+          institution_name: Pennsylvania Game Commission
+      - given: James A.
+        surname: Martin
+        role: editor
+        sequence: additional
+        institution:
+          institution_name: University of Georgia
+      - given: Kelly S.
+        surname: Reyna
+        role: editor
+        sequence: additional
+        institution:
+          institution_name: Texas A&M University-Commerce
+      - given: Evan P.
+        surname: Tanner
+        role: editor
+        sequence: additional
+        institution:
+          institution_name: Texas A&M University-Kingsville
+          institution_department: Caesar Kleberg Wildlife Research Institute
+      - given: Theron M.
+        surname: Terhune II
+        role: editor
+        sequence: additional
+        institution:
+          institution_name: Orton Plantation
+      - given: Molly K.
+        surname: Foley
+        role: editor
+        sequence: additional
+        institution:
+          institution_name: National Bobwhite & Grassland Initiative
+
+The :code:`journal_metadata` property includes metadata about the journal overall.
+
+.. code-block:: yaml
+
+    journal_metadata:
+      full_title:
+        - National Quail Symposium Proceedings
+        - Quail
+        - National Quail Symposium proceedings
+        - Proceedings of the ... National Quail Symposium
+        - Proceedings of the National Quail Symposia
+        - "Gamebird : a joint conference of Quail and Perdix"
+        - NQSP
+      abbrev_title:
+        - NQSP
+      issn_data:
+        - issn: 2573-5667
+          type: print
+        - issn: 2573-5683
+          type: electronic
+      doi_data:
+        doi: "10.7290/nqsp"
+        resource: "https://trace.tennessee.edu/nqsp/"
+
+The :code:`journal_issue` property includes other metadata about the issue.
+
+.. code-block:: yaml
+
+    journal_issue:
+      publication_date:
+        year: "2022"
+      journal_volume:
+        volume: "9"
+      titles:
+        title: "Quail 9: National Quail Symposium"
+
+Finally, the :code:`head` property includes metadata required for deposit.
+
+.. code-block:: yaml
+
+    head:
+      doi_batch_id: utk_nqsp_9_10_2022
+      timestamp: "20221021080808"
+      depositor:
+        depositor_name: Mark Baggett
+        email_address: mbagget1@utk.edu
+      registrant: University of Tennessee
 
 --------------------
 Journal Batch Writer
