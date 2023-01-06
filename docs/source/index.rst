@@ -1,9 +1,10 @@
-
 UTK Crossref Batch Procedures
 =============================
 
+This portal contains information about batch registration of DOIs in Crossref at the University of Tennessee.
+
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
    :glob:
 
