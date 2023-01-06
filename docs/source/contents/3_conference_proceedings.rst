@@ -3,7 +3,7 @@ Conference Proceedings
 ======================
 
 .. warning::
-    While Crossref allows you to mint DOIs for conference proceedings, please not that we do not model our conference
+    While Crossref allows you to mint DOIs for conference proceedings, please note that we do not model our conference
     proceedings in VolJournals (e.g. NSQP) as conference proceedings.  While information here may be useful, please see
     the Journal Articles section for procedures on batch registration of DOIs.
 
