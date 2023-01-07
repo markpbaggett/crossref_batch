@@ -474,9 +474,125 @@ Finally, the :code:`head` property includes metadata required for deposit.
         email_address: mbagget1@utk.edu
       registrant: University of Tennessee
 
---------------------
-Journal Batch Writer
---------------------
+------------------------------------------------------------------------
+DOIJournalBatchWriter and Other Classes Used for Registration Generation
+------------------------------------------------------------------------
+
+Crossref batch registration of DOIs for journals and journal articles is handled primarily by the :code:`crawl_papers.py`
+script in this repository.  While there are a few classes here, :code:`DOIJournalBatchWriter` is primarily used.
+
+On initialization, :code:`DOIJournalBatchWriter` requires two arguments: :code:`output_file` or the file that you want
+to write your initial registration to and :code:`yaml_config` or the yaml file that contains additional metadata beyond
+what is found in the article level metadata that is needed for deposit and DOI registration. The :code:`output_file` is
+converted to an attribute that is used later while :code:`yaml_config` is read and converted to a dictionary.
+
+Also during initialization, initial namespaces are also declared for later use.  This is important to know in case there
+are future efforts to make use of other namespaces listed in the Crossref documentation and examples above as they are not
+declared currently. Next, the path to the metadata files that is declared in the :code:`yaml_config` is crawled. During
+the crawl, if a DOI is found in the metadata, that file is passed to the :code:`Article` class.
+
+.. code-block:: python
+
+    def __crawl_journal_articles(self):
+        """Crawl a directory of Journal Articles and find a list files with DOIs. Ignore any journal content where no
+        DOI is present."""
+        valid_articles = []
+        for path, directories, files in os.walk(self.path_to_articles):
+            for file in files:
+                article = Article(f"{path}/{file}")
+                if article.doi:
+                    valid_articles.append(article.metadata)
+        return valid_articles
+
+The :code:`Article` class decodes the binary XML file and converts it to an :code:`ElementTree`. It then passes relevant
+metadata to other defined classes to build the title, date, doi, and contributor information that is expected in the
+registration. Note that if future imports expect more information in the article that additional classes will need to be
+added and added to :code:`Article` appropriately.
+
+.. code-block:: python
+
+    class Article(BaseProperty):
+        def __init__(self, path):
+            super().__init__(path)
+            self.contributors = Contributors(path).contributors
+            self.title = Title(path).titles[0]
+            self.doi = DOI(path).doi_data
+            self.publication_date = PublicationDate(path).publication_date
+            self.metadata = self.__get_relevant_metadata()
+
+        def __get_relevant_metadata(self):
+            return {
+                "contributors": self.contributors,
+                "title": self.title,
+                "doi": self.doi,
+                "date": self.publication_date
+            }
+
+Finally, the output XML file is generated. Each section of the outgoing XML is defined in a private method in
+:code:`DOIBatchJournalWriter` like in the examples below:
+
+.. code-block:: python
+
+    def __build_journal_issue(self):
+        return self.cr.journal_issue(
+            self.__build_contributors(),
+            self.cr.titles(
+                self.cr.title(
+                    self.proceedings_metadata['journal_issue']['titles']['title']
+                )
+            ),
+            self.cr.publication_date(
+                self.cr.year(
+                    self.proceedings_metadata['journal_issue']['publication_date']['year']
+                )
+            ),
+            self.cr.journal_volume(
+                self.cr.volume(
+                    self.proceedings_metadata['journal_issue']['journal_volume']['volume']
+                )
+            )
+        )
+
+    def __build_journal_metadata(self):
+        return self.cr.journal_metadata(
+            *self.__get_full_titles(),
+            *self.__get_abrev_titles(),
+            *self.__get_issns(),
+            self.__get_doi()
+        )
+
+Ultimately, this data is passed up appropriately to methods representing parent nodes and ultimately converted
+to one XML file.
+
+.. code-block:: python
+
+    def __build_response(self):
+        return etree.tostring(
+            self.__build_xml(),
+            pretty_print=True,
+            xml_declaration=True,
+            encoding='iso-8859-1'
+        )
+
+    def __build_xml(self):
+        begin = self.cr.doi_batch(
+            self.__build_head(),
+            self.__build_body()
+        )
+        begin.attrib['{http://www.w3.org/2001/XMLSchema-instance}schemaLocation'] = "http://www.crossref.org/schema/5.3.1 http://www.crossref.org/schemas/crossref5.3.1.xsd"
+        begin.attrib['version'] = '5.3.1'
+        return begin
+
+In order to pass information accordingly, file and path names are added for each registration at the bottom of the file
+as so:
+
+.. code-block:: python
+
+    if __name__ == "__main__":
+        path_to_proceedings_metadata = "data/quail_journal.yml"
+        x = DoiJournalBatchWriter('test.xml', path_to_proceedings_metadata).response
+        with open('example_journal.xml', 'wb') as example:
+            example.write(x)
 
 
 ---------------
