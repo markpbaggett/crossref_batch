@@ -17,16 +17,16 @@ class BaseProperty:
             return etree.parse(xml_file)
 
 
-class Proceeding(BaseProperty):
+class Article(BaseProperty):
     def __init__(self, path):
         super().__init__(path)
         self.contributors = Contributors(path).contributors
         self.title = Title(path).titles[0]
         self.doi = DOI(path).doi_data
         self.publication_date = PublicationDate(path).publication_date
-        self.full_proceeding = self.__get_full_proceeding()
+        self.metadata = self.__get_relevant_metadata()
 
-    def __get_full_proceeding(self):
+    def __get_relevant_metadata(self):
         return {
             "contributors": self.contributors,
             "title": self.title,
@@ -282,9 +282,9 @@ class DoiProceedingsBatchWriter:
         valid_proceedings = []
         for path, directories, files in os.walk(self.path_to_proceedings):
             for file in files:
-                proceeding = Proceeding(f"{path}/{file}")
+                proceeding = Article(f"{path}/{file}")
                 if proceeding.doi:
-                    valid_proceedings.append(proceeding.full_proceeding)
+                    valid_proceedings.append(proceeding.metadata)
         return valid_proceedings
 
     def __build_conference_papers(self):
@@ -368,11 +368,10 @@ class DoiProceedingsBatchWriter:
 
 
 class DoiJournalBatchWriter:
-    def __init__(self, output_file, yaml_config):
-        self.output_file = output_file
+    def __init__(self, yaml_config):
         self.proceedings_metadata = yaml.safe_load(open(yaml_config, "r"))
         self.head = self.proceedings_metadata['head']
-        self.path_to_proceedings = self.proceedings_metadata['path']
+        self.path_to_articles = self.proceedings_metadata['path']
         self.cr = self.__build_namespace(
             "http://www.crossref.org/schema/5.3.1",
             None
@@ -381,7 +380,7 @@ class DoiJournalBatchWriter:
             "http://www.w3.org/2001/XMLSchema-instance",
             "xsi"
         )
-        self.valid_papers = self.__crawl_conference_papers()
+        self.valid_papers = self.__crawl_journal_articles()
         self.response = self.__build_response().strip()
 
     @staticmethod
@@ -602,14 +601,16 @@ class DoiJournalBatchWriter:
             i += 1
         return final_contributors
 
-    def __crawl_conference_papers(self):
-        valid_proceedings = []
-        for path, directories, files in os.walk(self.path_to_proceedings):
+    def __crawl_journal_articles(self):
+        """Crawl a directory of Journal Articles and find a list files with DOIs. Ignore any journal content where no
+        DOI is present."""
+        valid_articles = []
+        for path, directories, files in os.walk(self.path_to_articles):
             for file in files:
-                proceeding = Proceeding(f"{path}/{file}")
-                if proceeding.doi:
-                    valid_proceedings.append(proceeding.full_proceeding)
-        return valid_proceedings
+                article = Article(f"{path}/{file}")
+                if article.doi:
+                    valid_articles.append(article.metadata)
+        return valid_articles
 
     @staticmethod
     def __get_suffix_if_exists(contributor):
@@ -636,12 +637,31 @@ class DoiJournalBatchWriter:
 
 
 if __name__ == "__main__":
-    # path_to_proceedings_metadata = "data/quail.yml"
-    # x = DoiProceedingsBatchWriter('test.xml', path_to_proceedings_metadata).response
-    # with open('example.xml', 'wb') as example:
-    #     example.write(x)
+    import argparse
+    parser = argparse.ArgumentParser(description='Crawl Papers and Generate Output XML.')
+    parser.add_argument("-o", "--output", dest="output", help="Specify output XML file.", default='output.xml')
+    parser.add_argument(
+        "-y",
+        "--yaml_config",
+        dest="yaml_config",
+        help="Specify path to your yaml configuration",
+        required=True
+    )
+    parser.add_argument(
+        "-t",
+        "--registration_type",
+        dest="r_type",
+        help="Specify type of registration",
+        default='journal_articles',
+        choices=['journal_articles', 'proceedings']
+    )
+    args = parser.parse_args()
+    if args.rtype == 'journal_articles':
+        x = DoiJournalBatchWriter(args.yaml_config).response
+        with open(args.output, 'wb') as example:
+            example.write(x)
+    elif args.rtype == 'proceedings':
+        x = DoiProceedingsBatchWriter(args.output, args.yaml_config).response
+        with open(args.output, 'wb') as example:
+            example.write(x)
 
-    path_to_proceedings_metadata = "data/quail_journal.yml"
-    x = DoiJournalBatchWriter('test.xml', path_to_proceedings_metadata).response
-    with open('example_journal.xml', 'wb') as example:
-        example.write(x)

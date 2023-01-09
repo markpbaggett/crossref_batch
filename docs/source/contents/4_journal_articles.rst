@@ -17,7 +17,7 @@ Anatomy of Crossref Journal Metadata
 Crossref provides excellent documentation about the anatomy of a batch registration in its
 `schema documentation <https://data.crossref.org/reports/help/schema_doc/5.3.1/index.html>`_.
 
-This section describes details regardingv what Crossref expects for journals so that it is easy to understand why we
+This section describes details regarding what Crossref expects for journals so that it is easy to understand why we
 create the various components in our generated XML described in later sections. Please note that the details here may
 only include details about the sections we currently use. See schema documentation for more details about unused tags.
 
@@ -25,7 +25,7 @@ Full Description as XML
 =======================
 
 Below is a description of the anatomy of a Journal object down to its ground children tags. Please note that the
-:code:`cardinality` attributes in children tags are not a part of the Crossref schem but instead included to make it
+:code:`cardinality` attributes in children tags are not a part of the Crossref schema but instead included to make it
 easier to understand the cardinality expectations of each tag. Please see the `schema documentation <https://data.crossref.org/reports/help/schema_doc/5.3.1/index.html>`_
 for details on the anatomy of grand children tags and nodes.
 
@@ -603,20 +603,35 @@ Crawling papers and generating an XML upload can be done with
 `the script found here <https://github.com/markpbaggett/crossref_batch/blob/main/utilities/crawl_papers.py>`_.
 The script iterates over all XML files in a directory and creates an XML file according to the
 `Crossref 5.3.1 XML schema definition <https://data.crossref.org/schemas/common5.3.1.xsd>`_. The script needs a yml file
-with the parts described above and path to files.
+with the parts described above including a path to the metadata files.
+
+To generate an initial XML registration, you can run the script like this:
+
+.. code-block:: shell
+
+    python utilities/crawl_papers.py -y data/quail_journal -o quail_8.xml
+
+This will generate a registration file that includes metadata from the supplied yaml and any articles in the path that
+have a DOI. Once the XML file is generated, it may need to be cleaned. The following section describes this process.
 
 ----------------------
 Finalizing XML Deposit
 ----------------------
 
-Finally, run `lxml_trasform.py <https://github.com/markpbaggett/crossref_batch/blob/main/utilities/lxml_transform.py>`_
-to remove blank elements.
+Finally, run `lxml_transform.py <https://github.com/markpbaggett/crossref_batch/blob/main/utilities/lxml_transform.py>`_
+to remove blank elements and perform other required steps for finalizing the XML output.
+
+.. code-block:: shell
+
+    python utilities/lxml_transform.py -i quail_8.xml -o quail_8_clean.xml
+
 
 Then, take that XML file and upload it to Crossref for testing.
 
-First, check that your `XML is wellformed and valid <https://apps.crossref.org/XSDParse/>`_.
+First, check that your `XML is wellformed and valid <https://apps.crossref.org/XSDParse/>`_ by uploading here.
 
-Next, upload your XML file to `the test system <https://test.crossref.org>`_ for proceesing.
+Next, upload your XML file to `the test system <https://test.crossref.org>`_ for processing and to insure there are no
+major issues.
 
-Finally, if all is good, upload to `the production system <https://doi.crossref.org>`_.
-
+Finally, if all is good, upload to `the production system <https://doi.crossref.org>`_. After deposit, you will receive
+an email stating whether your upload was successful.

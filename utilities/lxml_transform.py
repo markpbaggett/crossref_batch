@@ -1,4 +1,5 @@
 from lxml import etree
+import argparse
 
 xslt_root = etree.XML('''
 <xsl:stylesheet version="1.0"
@@ -20,8 +21,12 @@ xslt_root = etree.XML('''
 ''')
 
 transform = etree.XSLT(xslt_root)
-xml = etree.parse('example_journal.xml')
+parser = argparse.ArgumentParser(description='Crawl Papers and Generate Output XML.')
+parser.add_argument("-i", "--input", dest="input", help="Specify input XML file.", required=True)
+parser.add_argument("-o", "--output", dest="output", help="Specify output XML file.", required=True)
+args = parser.parse_args()
+xml = etree.parse(args.input)
 results = transform(xml)
 xml_string = etree.tostring(results, pretty_print=True, encoding='iso-8859-1')
-with open('lxml_test_journal.xml', 'wb') as my_xml:
+with open(args.output, 'wb') as my_xml:
     my_xml.write(xml_string)
