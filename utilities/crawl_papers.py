@@ -656,11 +656,11 @@ if __name__ == "__main__":
         choices=['journal_articles', 'proceedings']
     )
     args = parser.parse_args()
-    if args.rtype == 'journal_articles':
+    if args.r_type == 'journal_articles':
         x = DoiJournalBatchWriter(args.yaml_config).response
         with open(args.output, 'wb') as example:
             example.write(x)
-    elif args.rtype == 'proceedings':
+    elif args.r_type == 'proceedings':
         x = DoiProceedingsBatchWriter(args.output, args.yaml_config).response
         with open(args.output, 'wb') as example:
             example.write(x)
