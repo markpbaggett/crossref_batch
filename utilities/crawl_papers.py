@@ -3,6 +3,7 @@ import arrow
 import yaml
 from lxml.builder import ElementMaker
 import os
+import csv
 
 
 class BaseProperty:
@@ -18,11 +19,12 @@ class BaseProperty:
 
 
 class Article(BaseProperty):
-    def __init__(self, path):
+    def __init__(self, path, doi_location='metadata', doi_csv=None):
         super().__init__(path)
+        self.doi_location = doi_location
         self.contributors = Contributors(path).contributors
         self.title = Title(path).titles[0]
-        self.doi = DOI(path).doi_data
+        self.doi = DOI(path, doi_location, doi_csv).doi_data
         self.publication_date = PublicationDate(path).publication_date
         self.metadata = self.__get_relevant_metadata()
 
@@ -70,18 +72,30 @@ class Title(BaseProperty):
 
 
 class DOI(BaseProperty):
-    def __init__(self, path):
+    def __init__(self, path, doi_source='metadata', doi_csv=''):
         super().__init__(path)
-        self.doi = self.__get_doi()
         self.coverpage = self.__get_resource()
+        self.doi_csv = doi_csv
+        self.doi = self.__get_doi(doi_source)
         self.doi_data = self.__build_doi_object()
 
-    def __get_doi(self):
-        matches = [doi.text for doi in self.root.xpath('/documents/document/fields/field[@name="doi"]/value')]
-        if len(matches) > 0:
-            return matches[0]
+    def __get_doi(self, source):
+        if source == 'metadata':
+            matches = [doi.text for doi in self.root.xpath('/documents/document/fields/field[@name="doi"]/value')]
+            if len(matches) > 0:
+                return matches[0]
+            else:
+                return None
         else:
-            return None
+            return self.__find_if_doi_in_csv()
+
+    def __find_if_doi_in_csv(self):
+        with open(self.doi_csv, 'r') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                if row['url'] == self.coverpage:
+                    return row['doi']
+        return None
 
     def __get_resource(self):
         return [url.text for url in self.root.xpath('/documents/document/coverpage-url')][0]
@@ -368,8 +382,10 @@ class DoiProceedingsBatchWriter:
 
 
 class DoiJournalBatchWriter:
-    def __init__(self, yaml_config):
+    def __init__(self, yaml_config, csv_path=""):
         self.proceedings_metadata = yaml.safe_load(open(yaml_config, "r"))
+        self.csv_path = csv_path
+        self.doi_location = self.__find_doi_location()
         self.head = self.proceedings_metadata['head']
         self.path_to_articles = self.proceedings_metadata['path']
         self.cr = self.__build_namespace(
@@ -382,6 +398,12 @@ class DoiJournalBatchWriter:
         )
         self.valid_papers = self.__crawl_journal_articles()
         self.response = self.__build_response().strip()
+
+    def __find_doi_location(self):
+        if self.csv_path != "":
+            return "csv"
+        else:
+            return "metadata"
 
     @staticmethod
     def __build_namespace(uri, short):
@@ -607,7 +629,7 @@ class DoiJournalBatchWriter:
         valid_articles = []
         for path, directories, files in os.walk(self.path_to_articles):
             for file in files:
-                article = Article(f"{path}/{file}")
+                article = Article(f"{path}/{file}", self.doi_location, self.csv_path)
                 if article.doi:
                     valid_articles.append(article.metadata)
         return valid_articles
@@ -655,13 +677,29 @@ if __name__ == "__main__":
         default='journal_articles',
         choices=['journal_articles', 'proceedings']
     )
+    parser.add_argument(
+        "-d",
+        "--doi_source",
+        dest="doi_source",
+        help="Specify the source of dois.",
+        default='metadata',
+        choices=['metadata', 'csv']
+    )
+    parser.add_argument(
+        "-c",
+        "--csv_path",
+        dest="csv_path",
+        help="If a CSV is your source, what is the path to the csv?",
+    )
     args = parser.parse_args()
     if args.r_type == 'journal_articles':
-        x = DoiJournalBatchWriter(args.yaml_config).response
+        if args.doi_source == 'metadata':
+            x = DoiJournalBatchWriter(args.yaml_config).response
+        else:
+            x = DoiJournalBatchWriter(args.yaml_config, csv_path=args.csv_path).response
         with open(args.output, 'wb') as example:
             example.write(x)
     elif args.r_type == 'proceedings':
         x = DoiProceedingsBatchWriter(args.output, args.yaml_config).response
         with open(args.output, 'wb') as example:
             example.write(x)
-
