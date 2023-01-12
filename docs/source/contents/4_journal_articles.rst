@@ -481,15 +481,32 @@ DOIJournalBatchWriter and Other Classes Used for Registration Generation
 Crossref batch registration of DOIs for journals and journal articles is handled primarily by the :code:`crawl_papers.py`
 script in this repository.  While there are a few classes here, :code:`DOIJournalBatchWriter` is primarily used.
 
-On initialization, :code:`DOIJournalBatchWriter` requires two arguments: :code:`output_file` or the file that you want
-to write your initial registration to and :code:`yaml_config` or the yaml file that contains additional metadata beyond
-what is found in the article level metadata that is needed for deposit and DOI registration. The :code:`output_file` is
-converted to an attribute that is used later while :code:`yaml_config` is read and converted to a dictionary.
+:code:`DOIJournalBatchWriter` also includes an optional argument, :code:`csv_path`. By default, this is an empty string.
+If the string is not empty, it signifies to the :code:`DOIJournalBatchWriter` instance that the relevant DOIs in this
+registration is found in an attached CSV rather than the metadata record for individual works.
 
-Also during initialization, initial namespaces are also declared for later use.  This is important to know in case there
-are future efforts to make use of other namespaces listed in the Crossref documentation and examples above as they are not
-declared currently. Next, the path to the metadata files that is declared in the :code:`yaml_config` is crawled. During
-the crawl, if a DOI is found in the metadata, that file is passed to the :code:`Article` class.
+On initialization, :code:`DOIJournalBatchWriter` requires one argument: :code:`yaml_config` or the yaml file that
+contains additional metadata beyond what is found in the article level metadata that is needed for deposit and DOI
+registration. The :code:`yaml_config` is read by the class, converted to a dictionary, and stored as an attribute. If
+:code:`csv_path` is included, it is stored in an attribute as well.
+
+Also during initialization, initial namespaces are declared for later use.  This is important to know in case there
+are future efforts to make use of other namespaces listed in the Crossref documentation and examples above as they are
+not declared currently and will need to be before they can be used. A special attribute called :code:`doi_location` is
+also defined. This attribute determines whether the source of the DOIs should be the metadata record or a CSV.
+
+.. code-block:: python
+
+    def __find_doi_location(self):
+        if self.csv_path != "":
+            return "csv"
+        else:
+            return "metadata"
+
+Next, the path to the metadata files that is declared in the :code:`yaml_config` is crawled. Each metadata file found
+in the path is passed to the :code:`Article` class which builds relevant metadata and determines whether the article
+should have a DOI registered. This method sends the path to the current file, where to look for the DOI, a path to the
+CSV to use for lookup if the source is CSV.
 
 .. code-block:: python
 
@@ -499,7 +516,7 @@ the crawl, if a DOI is found in the metadata, that file is passed to the :code:`
         valid_articles = []
         for path, directories, files in os.walk(self.path_to_articles):
             for file in files:
-                article = Article(f"{path}/{file}")
+                article = Article(f"{path}/{file}", self.doi_location, self.csv_path)
                 if article.doi:
                     valid_articles.append(article.metadata)
         return valid_articles
@@ -512,11 +529,12 @@ added and added to :code:`Article` appropriately.
 .. code-block:: python
 
     class Article(BaseProperty):
-        def __init__(self, path):
+        def __init__(self, path, doi_location='metadata', doi_csv=None):
             super().__init__(path)
+            self.doi_location = doi_location
             self.contributors = Contributors(path).contributors
             self.title = Title(path).titles[0]
-            self.doi = DOI(path).doi_data
+            self.doi = DOI(path, doi_location, doi_csv).doi_data
             self.publication_date = PublicationDate(path).publication_date
             self.metadata = self.__get_relevant_metadata()
 
@@ -527,6 +545,52 @@ added and added to :code:`Article` appropriately.
                 "doi": self.doi,
                 "date": self.publication_date
             }
+
+The :code:`DOI` class includes the code for find the relevant DOI based on the DOI location information passed to it
+during initialiization. If the source is the metadata file, it looks at :code:`/documents/document/fields/field[@name="doi"]/value`.
+If the source is a CSV, it crawls the CSV for each row in the CSV looking for a match.
+
+.. code-block:: python
+    :emphasize-lines: 19-25
+
+    class DOI(BaseProperty):
+        def __init__(self, path, doi_source='metadata', doi_csv=''):
+            super().__init__(path)
+            self.coverpage = self.__get_resource()
+            self.doi_csv = doi_csv
+            self.doi = self.__get_doi(doi_source)
+            self.doi_data = self.__build_doi_object()
+
+        def __get_doi(self, source):
+            if source == 'metadata':
+                matches = [doi.text for doi in self.root.xpath('/documents/document/fields/field[@name="doi"]/value')]
+                if len(matches) > 0:
+                    return matches[0]
+                else:
+                    return None
+            else:
+                return self.__find_if_doi_in_csv()
+
+        def __find_if_doi_in_csv(self):
+            with open(self.doi_csv, 'r') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    if row['url'] == self.coverpage:
+                        return row['doi']
+            return None
+
+        def __get_resource(self):
+            return [url.text for url in self.root.xpath('/documents/document/coverpage-url')][0]
+
+        def __build_doi_object(self):
+            if self.doi:
+                return {
+                    "doi": self.doi.replace("https://doi.org/", ""),
+                    "resource": self.coverpage,
+                    "timestamp": str(arrow.utcnow().format("YYYYMMDDHHmmss"))
+                }
+            else:
+                return None
 
 Finally, the output XML file is generated. Each section of the outgoing XML is defined in a private method in
 :code:`DOIBatchJournalWriter` like in the examples below:
@@ -605,11 +669,17 @@ The script iterates over all XML files in a directory and creates an XML file ac
 `Crossref 5.3.1 XML schema definition <https://data.crossref.org/schemas/common5.3.1.xsd>`_. The script needs a yml file
 with the parts described above including a path to the metadata files.
 
-To generate an initial XML registration, you can run the script like this:
+To generate an initial XML registration where DOIs are located in the metadata record, you can run the script like this:
 
 .. code-block:: shell
 
     python utilities/crawl_papers.py -y data/quail_journal -o quail_8.xml
+
+To generate an initial XML registration where DOIs are found in an attached CSV, you can run the script like this:
+
+.. code-block:: shell
+
+    python utilities/crawl_papers.py -y data/quail_journal.yml -d csv -c nqsp_8.csv -o nqsp8.xml
 
 This will generate a registration file that includes metadata from the supplied yaml and any articles in the path that
 have a DOI. Once the XML file is generated, it may need to be cleaned. The following section describes this process.
