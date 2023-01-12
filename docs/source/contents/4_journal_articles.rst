@@ -350,7 +350,7 @@ in row one and the headings be lowercase.
 The value of the :code:`url` column fields should be the url to the work in Digital Commons (e.g. :code:`https://trace.tennessee.edu/nqsp/vol8/iss1/24`).
 
 The value of the :code:`doi` column fields can be a DOI that starts with :code:`https://doi.org/` or :code:`10.7290`.
-Crossref expects the value to be formatted as :code:`:code:`10.7290/xxxxxx` so code exists in the scripts to remove
+Crossref expects the value to be formatted as :code:`10.7290/xxxxxx` so code exists in the scripts to remove
 :code:`https://doi.org/` if it is included:
 
 .. code-block:: python
