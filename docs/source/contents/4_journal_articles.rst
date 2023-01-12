@@ -71,6 +71,35 @@ for details on the anatomy of grand children tags and nodes.
       </journal_article>
     </journal>
 
+Using CSV as the DOI Source
+===========================
+
+By default, it is assumed that the DOIs we intend to mint are included in the metadata record for each work. Optionally,
+a CSV can be supplied as the source (see below for more details).
+
+If you are supplying a CSV, the CSV must have 2 columns:  :code:`url` and :code:`doi`.  These columns can appear anywhere,
+and there can be :code:`n` number of additional columns. The only requirement is that :code:`url` and :code:`doi` appear
+in row one and the headings be lowercase.
+
+The value of the :code:`url` column fields should be the url to the work in Digital Commons (e.g. :code:`https://trace.tennessee.edu/nqsp/vol8/iss1/24`).
+
+The value of the :code:`doi` column fields can be a DOI that starts with :code:`https://doi.org/` or :code:`10.7290`.
+Crossref expects the value to be formatted as :code:`:code:`10.7290/xxxxxx` so code exists in the scripts to remove
+:code:`https://doi.org/` if it is included:
+
+.. code-block:: python
+    :emphasize-lines: 4
+
+    def __build_doi_object(self):
+        if self.doi:
+            return {
+                "doi": self.doi.replace("https://doi.org/", ""),
+                "resource": self.coverpage,
+                "timestamp": str(arrow.utcnow().format("YYYYMMDDHHmmss"))
+            }
+        else:
+            return None
+
 Journal Metadata
 ================
 
