@@ -530,42 +530,45 @@ class DoiJournalBatchWriter:
         """Build a list of contributors and unpack them into an element with the unpack operator (*)."""
         i = 0
         final_contributors = []
-        for person in self.proceedings_metadata['contributors']:
-            sequence = 'first'
-            department = ''
-            suffix = ''
-            if i != 0:
-                sequence = "additional"
-            if 'suffix' in person:
-                suffix = person['suffix']
-            if 'institution_department' in person['institution']:
-                department = person['institution']['institution_department']
-            final_contributors.append(
-                self.cr.person_name(
-                    self.cr.given_name(
-                        person['given']
-                    ),
-                    self.cr.surname(
-                        person['surname']
-                    ),
-                    self.cr.suffix(
-                        suffix
-                    ),
-                    self.cr.affiliations(
-                        self.cr.institution(
-                            self.cr.institution_name(
-                                person['institution']['institution_name']
-                            ),
-                            self.cr.institution_department(
-                                department
-                            )
+        if 'contributors' in self.proceedings_metadata:
+            for person in self.proceedings_metadata['contributors']:
+                sequence = 'first'
+                department = ''
+                suffix = ''
+                if i != 0:
+                    sequence = "additional"
+                if 'suffix' in person:
+                    suffix = person['suffix']
+                if 'institution_department' in person['institution']:
+                    department = person['institution']['institution_department']
+                final_contributors.append(
+                    self.cr.person_name(
+                        self.cr.given_name(
+                            person['given']
                         ),
-                    ),
-                    sequence=sequence,
-                    contributor_role=person['role']
+                        self.cr.surname(
+                            person['surname']
+                        ),
+                        self.cr.suffix(
+                            suffix
+                        ),
+                        self.cr.affiliations(
+                            self.cr.institution(
+                                self.cr.institution_name(
+                                    person['institution']['institution_name']
+                                ),
+                                self.cr.institution_department(
+                                    department
+                                )
+                            ),
+                        ),
+                        sequence=sequence,
+                        contributor_role=person['role']
+                    )
                 )
-            )
-        return self.cr.contributors(*final_contributors)
+            return self.cr.contributors(*final_contributors)
+        else:
+            return self.cr.contributors()
 
     def __build_journal_articles(self):
         final_papers = []
