@@ -507,36 +507,24 @@ class DoiJournalBatchWriter:
         return abbrev_titles
 
     def __build_journal_issue(self):
-        if self.proceedings_metadata['journal_issue']['titles']['title'] != "":
-            return self.cr.journal_issue(
-                self.__build_contributors(),
-                self.__build_issue_title(),
-                self.cr.publication_date(
-                    self.cr.year(
-                        self.proceedings_metadata['journal_issue']['publication_date']['year']
-                    )
-                ),
-                self.cr.journal_volume(
-                    self.cr.volume(
-                        self.proceedings_metadata['journal_issue']['journal_volume']['volume']
-                    )
-                )
-            )
-        else:
-            return self.cr.journal_issue(
-                self.__build_contributors(),
-                self.cr.publication_date(
-                    self.cr.year(
-                        self.proceedings_metadata['journal_issue']['publication_date']['year']
-                    )
-                ),
-                self.cr.journal_volume(
-                    self.cr.volume(
-                        self.proceedings_metadata['journal_issue']['journal_volume']['volume']
-                    )
-                )
-            )
+        contributors = self.__build_contributors()
+        publication_year = self.proceedings_metadata['journal_issue']['publication_date']['year']
+        volume_number = self.proceedings_metadata['journal_issue']['journal_volume']['volume']
 
+        issue = self.cr.journal_issue(
+            contributors,
+            self.cr.publication_date(
+                self.cr.year(publication_year)
+            ),
+            self.cr.journal_volume(
+                self.cr.volume(volume_number)
+            )
+        )
+
+        if self.proceedings_metadata['journal_issue']['titles']['title'] != "":
+            issue.append(self.__build_issue_title())
+
+        return issue
 
     def __build_issue_title(self):
         return self.cr.titles(
