@@ -507,22 +507,41 @@ class DoiJournalBatchWriter:
         return abbrev_titles
 
     def __build_journal_issue(self):
-        return self.cr.journal_issue(
-            self.__build_contributors(),
-            self.cr.titles(
-                self.cr.title(
-                    self.proceedings_metadata['journal_issue']['titles']['title']
+        if self.proceedings_metadata['journal_issue']['titles']['title'] != "":
+            return self.cr.journal_issue(
+                self.__build_contributors(),
+                self.__build_issue_title(),
+                self.cr.publication_date(
+                    self.cr.year(
+                        self.proceedings_metadata['journal_issue']['publication_date']['year']
+                    )
+                ),
+                self.cr.journal_volume(
+                    self.cr.volume(
+                        self.proceedings_metadata['journal_issue']['journal_volume']['volume']
+                    )
                 )
-            ),
-            self.cr.publication_date(
-                self.cr.year(
-                    self.proceedings_metadata['journal_issue']['publication_date']['year']
+            )
+        else:
+            return self.cr.journal_issue(
+                self.__build_contributors(),
+                self.cr.publication_date(
+                    self.cr.year(
+                        self.proceedings_metadata['journal_issue']['publication_date']['year']
+                    )
+                ),
+                self.cr.journal_volume(
+                    self.cr.volume(
+                        self.proceedings_metadata['journal_issue']['journal_volume']['volume']
+                    )
                 )
-            ),
-            self.cr.journal_volume(
-                self.cr.volume(
-                    self.proceedings_metadata['journal_issue']['journal_volume']['volume']
-                )
+            )
+
+
+    def __build_issue_title(self):
+        return self.cr.titles(
+            self.cr.title(
+                self.proceedings_metadata['journal_issue']['titles']['title']
             )
         )
 
