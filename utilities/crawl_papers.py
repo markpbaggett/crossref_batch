@@ -510,6 +510,7 @@ class DoiJournalBatchWriter:
         contributors = self.__build_contributors()
         publication_year = self.proceedings_metadata['journal_issue']['publication_date']['year']
         volume_number = self.proceedings_metadata['journal_issue']['journal_volume']['volume']
+        issue_number = self.proceedings_metadata['journal_issue']['issue']
 
         issue = self.cr.journal_issue(
             contributors,
@@ -523,6 +524,9 @@ class DoiJournalBatchWriter:
 
         if self.proceedings_metadata['journal_issue']['titles']['title'] != "":
             issue.append(self.__build_issue_title())
+
+        if self.proceedings_metadata['journal_issue']['issue'] != "":
+            issue.append(self.cr.issue(issue_number))
 
         return issue
 
