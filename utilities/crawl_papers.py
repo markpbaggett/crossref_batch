@@ -615,25 +615,26 @@ class DoiJournalBatchWriter:
         i = 0
         sequence = 'first'
         for contributor in contributors:
-            given = contributor['fname']
-            if 'mname' in contributor:
-                given = f"{contributor['fname']} {contributor['mname']}"
-            if i != 0:
-                sequence = 'additional'
-            final_contributors.append(self.cr.person_name(
-                self.cr.given_name(
-                    given
-                ),
-                self.cr.surname(
-                    contributor['last']
-                ),
-                self.cr.suffix(
-                    self.__get_suffix_if_exists(contributor)
-                ),
-                *self.__get_institution_name(contributor),
-                sequence=sequence,
-                contributor_role='author'
-            ))
+            if contributor != {}:
+                given = contributor['fname']
+                if 'mname' in contributor:
+                    given = f"{contributor['fname']} {contributor['mname']}"
+                if i != 0:
+                    sequence = 'additional'
+                final_contributors.append(self.cr.person_name(
+                    self.cr.given_name(
+                        given
+                    ),
+                    self.cr.surname(
+                        contributor['last']
+                    ),
+                    self.cr.suffix(
+                        self.__get_suffix_if_exists(contributor)
+                    ),
+                    *self.__get_institution_name(contributor),
+                    sequence=sequence,
+                    contributor_role='author'
+                ))
             i += 1
         return final_contributors
 
