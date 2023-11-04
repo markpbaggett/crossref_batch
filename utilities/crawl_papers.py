@@ -93,7 +93,7 @@ class DOI(BaseProperty):
         with open(self.doi_csv, 'r') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                if row['url'] == self.coverpage:
+                if row['url'] == self.coverpage or row['url'] == f"{self.coverpage}/":
                     return row['doi']
         return None
 
