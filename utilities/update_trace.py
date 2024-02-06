@@ -36,11 +36,14 @@ class TraceCSV:
         with open(self.path, 'r') as csvfile:
             reader = DictReader(csvfile)
             for row in reader:
-                trace_path = row['calc_url']
-                value = ""
-                for match in self.matches:
-                    if match['url'] == trace_path:
-                        value = match['doi']
+                if row['doi'] != "":
+                    value = row['doi']
+                else:
+                    trace_path = row['calc_url']
+                    value = ""
+                    for match in self.matches:
+                        if match['url'] == trace_path:
+                            value = f"https://doi.org/{match['doi']}"
                 finals.append(value)
         return finals
 
@@ -51,6 +54,6 @@ class TraceCSV:
 
 
 if __name__ == "__main__":
-    x = CrossrefCSVs('csvs', 'JAEPL*')
-    t = TraceCSV('jaepl_1.xls_Mon_May_08_08_15_05_2023part_1.csv', x.dois_and_urls)
+    x = CrossrefCSVs('csvs/ijns_vol8', 'IJNS*')
+    t = TraceCSV('csvs/ijns_1.xls_Tue_Feb_06_06_10_39_2024part_1.csv', x.dois_and_urls)
     t.write()
